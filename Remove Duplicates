@@ -1,0 +1,24 @@
+/*************** Problem disc *****
+input: 2,3,1,2,3,89,-90,89
+output: 2,3,1,89,-90
+output won't have duplicates and will sustain the order as input elements
+**********************************/
+
+#include <bits/stdc++.h> 
+vector<int> removeDuplicates(vector<int> arr) {
+    unordered_set<int>elementHash;
+    vector<int>ans;
+    for(int &x:arr){
+        if(elementHash.find(x)==elementHash.end()){
+            elementHash.insert(x);
+            ans.push_back(x);
+         }
+    }
+    return ans;
+}
+
+/************* complexity analysis *************
+T.C. : O(N) : special case (rare/unfortunate worst case) O(N^2) : if hash collision is too high.
+       linear: as we just traversed in N order input and did a constant time lookup/insertion in hash.
+
+S.C. : O(N) : we have taken hash of order O(N).
