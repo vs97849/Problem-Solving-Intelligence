@@ -1,0 +1,2 @@
+# ProblemSolvingIntelligence
+Intelligence-Approaches-Solution
