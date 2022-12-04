@@ -1,8 +1,10 @@
 // implement a special data structure having following feature which gives/perform with constant time O(1) time Complexity
+/*
 push(value) : should push the data into DS in O(1)
 pop() : should remove and return last added data from DS in O(1)
 top() : should return last added data in O(1)
 max() : should return the max value present in current status of stack in O(1)
+*/
 
 class MaxStack {
     // stack having pair of element,max (max val till now in insertion order)
