@@ -1,0 +1,34 @@
+// implement a special data structure having following feature which gives/perform with constant time O(1) time Complexity
+push(value) : should push the data into DS in O(1)
+pop() : should remove and return last added data from DS in O(1)
+top() : should return last added data in O(1)
+max() : should return the max value present in current status of stack in O(1)
+
+class MaxStack {
+    // stack having pair of element,max (max val till now in insertion order)
+    stack<pair<int,int>>stk;
+public:
+	MaxStack() {
+	}
+	void specialPush(int value) {
+        int maxVal = value;
+        if(!stk.empty()) maxVal = max(maxVal, stk.top().second);
+        stk.push({value,maxVal});
+	}
+	int specialPop() {
+        if(stk.empty()) return -1;
+		int topVal = stk.top().first;
+        stk.pop();
+        return topVal;
+	}
+	int specialTop() {
+        if(stk.empty()) return -1;
+        return stk.top().first;
+	}
+	int specialMax() {
+        if(stk.empty()) return -1;
+        return stk.top().second;
+	}
+};
+
+// as can be seen time Complexity of each ops is constant O(1) and space complexity is O(N) .
