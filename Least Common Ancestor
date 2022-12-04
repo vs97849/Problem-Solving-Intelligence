@@ -2,7 +2,7 @@
 // given : root, u, v
 // return the LCA of two nodes
 
-Approach 1:
+/**************************************Approach 1:*******************************************
 // reach u from root
 // store the path till u in vector
 // reach v from root 
@@ -44,7 +44,7 @@ BinaryTreeNode<int>* findLCA(BTN* root, BTN* u, BTN* v) {
 //T.C. : O(N)
 //S.C. : O(N)
 
-/***********************************Approach 2*********************************/
+/**************************************  Approach 2  ***********************************/
 //here, we will try reducing space as well time trade-offs
 //during traversal of tree, we are at a node:
 //if found that both the searching nodes(u,v), found (collectively) : i.e. from self, left-subtree or right-subtree at the earliest. 
@@ -52,7 +52,7 @@ BinaryTreeNode<int>* findLCA(BTN* root, BTN* u, BTN* v) {
 
 #include <bits/stdc++.h> 
 typedef BinaryTreeNode<int> BTN;
-pair<bool,bool> getLCA(BTN *root, BTN *u, BTN *v, BTN **ans){
+pair<bool,bool> getLCA(BTN *root, BTN *u, BTN *v, BTN **ans){  //pair<uFound,vFound> will help with status from subtrees
     if(!root) return {false,false};
     bool uFound = false, vFound = false;
     if(root==u) uFound = true;
