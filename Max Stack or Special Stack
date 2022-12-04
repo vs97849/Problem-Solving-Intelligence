@@ -11,23 +11,23 @@ public:
 	MaxStack() {
 	}
 	void specialPush(int value) {
-        int maxVal = value;
-        if(!stk.empty()) maxVal = max(maxVal, stk.top().second);
-        stk.push({value,maxVal});
+            int maxVal = value;
+            if(!stk.empty()) maxVal = max(maxVal, stk.top().second);
+            stk.push({value,maxVal});
 	}
 	int specialPop() {
-        if(stk.empty()) return -1;
-		int topVal = stk.top().first;
-        stk.pop();
-        return topVal;
+            if(stk.empty()) return -1;
+	    	int topVal = stk.top().first;
+            stk.pop();
+            return topVal;
 	}
 	int specialTop() {
-        if(stk.empty()) return -1;
-        return stk.top().first;
+            if(stk.empty()) return -1;
+            return stk.top().first;
 	}
 	int specialMax() {
-        if(stk.empty()) return -1;
-        return stk.top().second;
+            if(stk.empty()) return -1;
+            return stk.top().second;
 	}
 };
 
