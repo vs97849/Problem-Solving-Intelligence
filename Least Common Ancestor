@@ -1,0 +1,45 @@
+// LCA of Binary Tree
+// given : root, u, v
+// return the LCA of two nodes
+
+Approach 1:
+// reach u from root
+// store the path till u in vector
+// reach v from root 
+// store the path till v in vector
+// iterate from start of the vector
+// return as soon it reaches last node till index after which nodes won't match. return this node.
+
+#include <bits/stdc++.h> 
+typedef BinaryTreeNode<int> BTN;
+//reaching the node
+bool reach(BTN *root, BTN *x, vector<BTN*>&path){
+    if(!root) return false;
+    path.push_back(root);
+    if(root==x) return true;
+    // return as soon as you found the node
+    if(reach(root->left,x,path)) return true;
+    if(reach(root->right,x,path)) return true;
+    //pop as current node's left and right subtree didn't have the required node.
+    path.pop_back();
+    return false;
+}
+BinaryTreeNode<int>* findLCA(BTN* root, BTN* u, BTN* v) {
+    if(!root) return nullptr;
+    if(u==v) return u;
+    vector<BTN*>pathU, pathV;
+    reach(root,u,pathU);
+    if(pathU.back()!=u) return nullptr;
+    reach(root,v,pathV);
+    if(pathV.back()!=v) return nullptr;
+    int i=0;
+    while(i<pathU.size() && i<pathV.size()){
+        //we reached node after which nodes won't match which is LCA, return
+        if(pathU[i]!=pathV[i]) return pathU[i-1];
+        ++i;
+    }
+    return i==pathU.size() ? pathU.back() : pathV.back();  //this means if u/v lies in the subtree of v/u 
+}
+
+//T.C. : O(N)
+//S.C. : O(N)
