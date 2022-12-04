@@ -43,3 +43,34 @@ BinaryTreeNode<int>* findLCA(BTN* root, BTN* u, BTN* v) {
 
 //T.C. : O(N)
 //S.C. : O(N)
+
+/***********************************Approach 2*********************************/
+//here, we will try reducing space as well time trade-offs
+//during traversal of tree, we are at a node:
+//if found that both the searching nodes(u,v), found (collectively) : i.e. from self, left-subtree or right-subtree at the earliest. 
+// that's the LCA node.
+
+#include <bits/stdc++.h> 
+typedef BinaryTreeNode<int> BTN;
+pair<bool,bool> getLCA(BTN *root, BTN *u, BTN *v, BTN **ans){
+    if(!root) return {false,false};
+    bool uFound = false, vFound = false;
+    if(root==u) uFound = true;
+    else if(root==v) vFound = true;
+    pair<bool,bool> lstatus = getLCA(root->left,u,v,ans);
+    pair<bool,bool> rstatus = getLCA(root->right,u,v,ans);
+    uFound |= lstatus.first | rstatus.first;
+    vFound |= lstatus.second | rstatus.second;
+    if(uFound & vFound & *ans==nullptr) *ans = root;
+    return {uFound, vFound};
+}
+BinaryTreeNode<int>* findLCA(BTN* root, BTN* u, BTN* v) {
+    if(!root) return nullptr;
+    if(u==v) return u;
+    BTN *ans = nullptr;
+    getLCA(root,u,v,&ans);
+    return ans;
+}
+
+// T.C. : O(N) : compare to Approach 1: we saved on whole recursive iteration and additional vector iteration.
+// S.C. : O(1) : we didn't use any additional variable DS
