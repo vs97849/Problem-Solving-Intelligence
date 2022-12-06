@@ -1,0 +1,60 @@
+// Find The Order In Which Pets Are Bought From The Pet Shop
+/*
+2  (T-number of testcase)
+2  (number of query)
+1 4 0  adding to shop(dog with id=4)( <query_type (1-adding to shop)(2->buying from shop)> <pet_id> <pet_type(dog(0)/cat(1)> 
+2 2    buying from shop 
+6
+1 2 0
+1 1 0
+1 3 1
+2 1
+2 0
+2 2 
+Sample Output 1 :
+4
+3 2 1
+*/
+
+#include <bits/stdc++.h> 
+vector<int>findOrder(vector<vector<int>>arr, int n) 
+{
+    vector<int>ans;
+    queue<pair<int,int>>dogQ;
+    queue<pair<int,int>>catQ;
+    int age = 0;
+    for(int i=0;i<n;++i){
+        int op = arr[i][0];
+        if(op==1){
+            int id = arr[i][1];
+            int ani = arr[i][2];
+            ++age;
+            if(ani==0) dogQ.push({id,age});
+            else catQ.push({id,age});
+        }
+        else{
+            int ch = arr[i][1];
+            if(ch==0){
+                ans.push_back(dogQ.front().first);
+                dogQ.pop();
+            }
+            else if(ch==1){
+                ans.push_back(catQ.front().first);
+                catQ.pop();
+            }
+            else{
+                int dogAge = dogQ.empty()?INT_MAX:dogQ.front().second;
+                int catAge = catQ.empty()?INT_MAX:catQ.front().second;
+                if(dogAge < catAge){
+                    ans.push_back(dogQ.front().first);
+                    dogQ.pop();
+                }
+                else{
+                    ans.push_back(catQ.front().first);
+                    catQ.pop();
+                }
+            }
+        }
+    }
+    return ans;
+}
