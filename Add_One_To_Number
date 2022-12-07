@@ -1,0 +1,36 @@
+// Given a non negative number as array of it's digits. add '1' to number and return resultant array.
+/* 
+Sample Input 1
+3
+3
+1 2 3
+2
+9 9
+1
+4
+Sample Output 1
+1 2 4
+1 0 0
+5
+*/
+
+#include <bits/stdc++.h> 
+vector<int> addOneToNumber(vector<int>& arr)
+{
+    stack<int>stk;
+    int j=0;
+    while(j<arr.size() && arr[j]==0) ++j; 
+    int car = 1;
+    for(int i=arr.size()-1;i>=j;--i){
+        int sum = arr[i] + car;
+        stk.push(sum % 10);
+        car = sum / 10;
+    }
+    if(car) stk.push(car);
+    vector<int>ans;
+    while(!stk.empty()) ans.push_back(stk.top()), stk.pop();
+    return ans;
+}
+
+// T.C. : O(N)
+// S.C. : O(N)
