@@ -1,0 +1,32 @@
+/* doesn't seem any explanation for the problem. seems straightforward
+
+#include <bits/stdc++.h>
+Node* insertionSortLL(Node *head)
+{
+    if (!head || !head->next) return head;
+    Node *nodeToBeInserted = head->next;
+    head->next = NULL;
+    while (nodeToBeInserted != NULL)
+    {
+        Node *pNext = nodeToBeInserted->next;
+        Node *iter = head;
+        if (nodeToBeInserted->data < iter->data)    /*node should be the new head as smaller than current head*/
+        {
+            nodeToBeInserted->next = iter;
+            head = nodeToBeInserted;
+        }
+        else 
+        {
+            while (iter != NULL && iter->next != NULL && iter->next->data <= nodeToBeInserted->data)
+                iter = iter->next;
+            nodeToBeInserted->next = iter->next;
+            iter->next = nodeToBeInserted;
+        }
+
+        nodeToBeInserted = pNext;
+    }
+    return head;
+}
+
+// T.C.: O(N^2)
+// S.C.: O(1)
