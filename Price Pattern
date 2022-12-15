@@ -1,0 +1,23 @@
+/* price at any arbitrary day i :
+  P(i) = P(i-1)+P(i-2) + P(i-1)*P(i-2)
+  find the price at Nth day.
+  Guess what, price at day 1 and day 2 would be given
+*/
+/*
+Approach: quite simple. will from N till 3 as input can't go below 3 as value/price for day1 and day2 already given.
+*/
+
+#include <bits/stdc++.h> 
+#define mod 1000000007
+int findPrice(int64_t a, int64_t b, int n) {
+    int ans = 0;
+    while(--n > 1){
+        ans = (a+b + a*b)%mod;  // as this will go huge so caring till popular mod value
+        a = b;
+        b = ans;
+    }
+    return ans;
+}
+
+//T.C. : O(N)
+//S.C. : O(1)
