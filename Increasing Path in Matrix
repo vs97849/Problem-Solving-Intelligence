@@ -1,0 +1,27 @@
+/*
+Given an NxM integers matrix, return the length of the longest increasing path in matrix.
+From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
+start from 0,0 and you may end up at any cell (i,j)
+Input: matrix = [[9,9,4],[6,6,8],[2,1,1]]
+Output: 4
+Explanation: The longest increasing path is [1, 2, 6, 9]
+
+Approach :
+start from 0,0 and do the dfs in a way, right and down movement. If current jumped cell element is lesser than prev then 
+return, else go ahead and add 1 and call next right and down. To save exponential call use DP means save the intermediate states and later reuse.
+
+#include <bits/stdc++.h> 
+int help(vector<vector<int>>&mat,int n,int m,int i, int j, int prev, vector<vector<int>>&dp){
+    if(i==n||j==m||mat[i][j]<=prev) return 0;
+    if(dp[i][j]!=-1) return dp[i][j];
+    return dp[i][j] = 1+max(help(mat,n,m,i+1,j,mat[i][j],dp),
+                 help(mat,n,m,i,j+1,mat[i][j],dp));
+}
+int longestIncreasingPath(vector<vector<int>> &mat, int n, int m)
+{
+    vector<vector<int>>dp(n,vector<int>(m,-1));
+    return help(mat,n,m,0,0,INT_MIN,dp);
+}
+
+// T.C. : O(N x M)
+// S.C. : O(N x M)
