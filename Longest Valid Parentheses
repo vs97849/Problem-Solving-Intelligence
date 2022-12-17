@@ -1,0 +1,34 @@
+/* given string having only '(' or ')' . find longest valid/balanced substring
+
+Sample Input 1:
+2
+)()()))
+)))(((
+Sample Output 1:
+4
+0
+
+Approach:
+simply follow the parantheses balancing procedure. on getting '(' push to stack. And on getting ')' pop from stack. and update the balance count.
+for getting balance count at current state, maintain a stack having indices of the '(' so that on getting ')' length can be deduced out.
+for preventing early/invalid occurrence of ')' we can push -1 in stack at start. And in intermediate when stack becomes empty, we would push index of ')' too.
+That will indicate the finish point of previously balanced substring/group.
+
+#include<stack>
+int longestValidParentheses(string &s) {
+    int ans=0;
+    stack<int>stk;
+    stk.push(-1);
+    for(int i=0;i<s.length();++i){
+        if(s[i]=='(') stk.push(i);
+        else{
+            stk.pop();
+            if(stk.empty()) stk.push(i);
+            else ans = max(ans,i-stk.top());
+        }
+    }
+    return ans;
+}
+
+//T.C. : O(N)
+//S.C. : O(N)
