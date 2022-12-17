@@ -1,0 +1,37 @@
+/*Given an array of integers, return all the premutations possible.
+Sample Input 1:
+2
+3
+1 2 3 
+1
+1
+Sample Output 1:
+1 2 3   1 3 2   2 1 3  2 3 1  3 1 2   3 2 1
+1
+*/
+
+Approach:
+we provide every element each position and take care of rest elements further recursively. or in simple mathematical terms. 
+fix pisition of a number at a position and make all possible arrangements of rest of the elments. 
+To Save space complexity and to make it runtime optimized, we would use backtracking to use same input array and reset the state of vector after swap again.
+
+#include <bits/stdc++.h> 
+void help(vector<int>&vec,int n,int curIn,vector<vector<int>>&ans){
+    if(curIn==n-1){
+        ans.push_back(vec);
+        return;
+    }
+    for(int i=curIn;i<n;++i){
+        swap(vec[i],vec[curIn]);
+        help(vec,n,curIn+1,ans);
+        swap(vec[i],vec[curIn]);
+    }
+}
+vector<vector<int>> permutations(vector<int>&vec, int size) {
+    vector<vector<int>>ans;
+    help(vec,size,0,ans);
+    return ans;
+}
+
+// T.C. : O(N!)
+// S.C. : O(recursive call stack or O(N!))
