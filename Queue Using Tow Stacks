@@ -1,0 +1,37 @@
+/*Given will be queries of 2 types 1(enqueue) and 2(dequeue) in queue.
+u will be using only 2 stacks to do it(means implement a queue), no other library than stack ops are avaiable.
+
+Approach:
+here the ultimate judgement will based on ordering of getting/deleting the oldest element added. but stack's behaviour is just opposite.
+So idea is to use two stack and double perform. so during enqueue, no worries as no checks will be there but on getting top() or dequeue() query,
+it will expect the oldest element, so second stack can be used to store the first stack's elements in opposite order and when last element is reached, 
+That is the required one.
+
+#include <bits/stdc++.h> 
+class Queue{
+    stack<int> stk1, stk2;
+    public:
+    bool enqueue(int X){
+        stk1.push(X);
+        return true;
+    }
+    int dequeue(){
+        if(stk1.empty()) return -1;
+        while(stk1.size()>1){
+            int topX = stk1.top();
+            stk1.pop();
+            stk2.push(topX);
+        }
+        int ans = stk1.top();
+        stk1.pop();
+        while(stk2.size()){
+            int topX = stk2.top();
+            stk2.pop();
+            stk1.push(topX);
+        }
+        return ans;
+    }
+};
+
+//T.C. : O(N)
+//S.C. : O(1) other than given DS
