@@ -1,0 +1,59 @@
+/* find Minimum insertions required to make the given string a palindrome. you are allowed to insert any character at any place and any number of times.
+Sample Input 1:
+2
+abcd
+dad 
+Sample Output 1:
+3
+0
+Explanation For Sample Input 1:
+In the first test case, the minimum characters to be added at front to make it a palindrome are 3 i.e. “dcb” which makes the string “dcbabcd”.
+
+In the second test case, the string is already a palindrome, we do not need to add any character.  
+Sample Input 2:
+2
+xxaxxa    
+abb
+Sample Output 2:
+1
+1
+Explanation For Sample Input 2:
+In the first test case, the minimum number of characters to be added at front to make it a palindrome is 1 i.e. “a” which makes the string “axxaxxa”.
+
+In the second test case, the minimum number of characters to be added at end to make it a palindrome is 1 i.e. “a” which makes the string “abba”.
+*/
+
+Aproach:
+as no greedy seems a solution here and no pattern seen to construct a formula, so going with checking all there ways. So using 2 pointer method from opposite sides.
+case1 : if str[i]==str[j] : 
+            we have 3 choices : a). match them and no extra character insertion needed.
+                                b). do not match and add extra character towards ith index
+                                c). do not match and add extra character towards jth index
+            from above 3 choices return minimum of them.
+ 
+case2 : else :
+            we have 2 choices (overlapping / same from b and c) from case 1:
+                                b). do not match and add extra character towards ith index
+                                c). do not match and add extra character towards jth index
+            from above 2 choices return minimum of them.
+
+T.C.: as trying every case here giving us the exponential time (2^N)
+But ovarlap of recursive stack calls can be found hence dp can be used.
+
+#include <bits/stdc++.h> 
+int help(string &str, int i, int j, vector<vector<int>>&dp){
+    if(i>=j) return 0;
+    if(dp[i][j]!=0) return dp[i][j];
+    int addCt = min(1+help(str,i+1,j,dp),1+help(str,i,j-1,dp));
+    if(str[i]==str[j]){
+        return dp[i][j] = min(help(str,i+1,j-1,dp),addCt);
+    }
+    else return dp[i][j] = addCt;
+}
+int minCharsforPalindrome(string &str){
+    vector<vector<int>>dp(str.length(),vector<int>(str.length()));
+    return help(str,0,str.length()-1,dp);
+}
+
+//T.C. : O(N^2)
+//S.C. : O(N^2)
