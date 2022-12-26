@@ -1,0 +1,43 @@
+/* arr of size n , find the number of subarrays having number of distinct elements not more that K.
+Sample Input 1 :
+2
+5 2
+2 1 3 2 4
+4 3
+1 2 3 1
+Sample Output 1 :
+9
+10
+*/
+
+Approach:
+Brute Force , traverse the array, consider each subarrays of all lengths, if condition satisifies then then to ans.
+Optimized (Sliding Window): traverse the array, on current element add to a hash, if the hash size is <=k then add window size to the ans, 
+this works because of the successive addition of window lengths(1+2+3+4+.....+n = n(n+1)/2 which is max in case of condition satisfaction). 
+In the same way on traversing array we will be on next window size(elligible) and adding to total.
+
+#include <bits/stdc++.h> 
+int kDistinctSubarrays(vector<int> &arr, int n, int k)
+{
+    int ans = 0;
+    unordered_map<int,int>countHash;
+    int left = 0, right = 0;
+    while(right<n){
+        ++countHash[arr[right]];
+        int lastValidIn = right;
+        if(countHash.size() <= k) ans += right-left+1;
+        while(countHash.size()>k){
+            int ct = --countHash[arr[left]];
+            if(ct==0){
+                countHash.erase(arr[left]);
+                ans += right - left;
+            }
+            ++left;
+        }
+        ++right;
+    }
+    return ans;
+}
+
+//T.C. : O(N)
+//S.C. : O(N)
