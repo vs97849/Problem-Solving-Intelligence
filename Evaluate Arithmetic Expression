@@ -1,0 +1,64 @@
+/* given will be string having numbers and 4 basic arithmetic operators(+ - * /). evalute and return final value
+Sample Input 1:
+1
+7
+2+3*6-7
+Sample Output 1:
+13
+Explanation For Sample Input 1:
+The output is 13 since the equation will be evaluated as follows (2+3*6-7) → (2+18-7) → (20 - 7) → 13.
+Sample Input 2:
+1
+9
+3*5+4/8-2
+Sample Output 2:
+13.5
+Explanation For Sample Input 2:
+The output is 13.5 since the equation will be evaluated as follows (3*5+4/8-2) →  (15+0.5 -2) → (15.5 - 2) → 13.5.
+*/
+
+Approach:
+Straightforward problem, just need to take care of operator's precedency.
+
+#include <bits/stdc++.h> 
+double add(double x, double y) { return y+x; }
+double subtract(double x, double y) { return y-x; }
+double multiply(double x, double y) { return y*x; }
+double divide(double x, double y) { return y/x; }
+unordered_map<char, double (*)(double,double)>performOpsMap = {
+    {'+',&add}, {'-',&subtract}, {'*',&multiply}, {'/',&divide}
+};
+unordered_map<char,int>opsCode = { {'+',0},{'-',0},{'*',1},{'/',1},{'.',-1} };
+double calculator(string s, int n) {
+    stack<char>operators;
+    stack<double>operands;
+    s.push_back('.');
+    for(int i=0;i<=n;++i){
+        double intVal = 0;
+        if(s[i]>='0' && s[i]<='9'){
+            while(s[i]>='0' && s[i]<='9') {
+                intVal = intVal*10 + (s[i] - '0');
+                ++i;
+            }
+            operands.push(intVal);
+            --i;
+        }
+        else{
+            if(operators.empty() || opsCode[s[i]] > opsCode[operators.top()]) operators.push(s[i]);
+            else{
+                while(!operators.empty() && opsCode[s[i]]<=opsCode[operators.top()]) {
+                    double x = operands.top(); operands.pop();
+                    double y = operands.top(); operands.pop();
+                    char op = operators.top(); operators.pop();
+                    double res = (*performOpsMap[op])(x,y);
+                    operands.push(res);                    
+                }
+                operators.push(s[i]);
+            }
+        }
+    }
+    return operands.top();
+}
+
+//T.C. : O(N)
+//S.C. : O(1)
