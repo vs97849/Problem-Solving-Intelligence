@@ -1,0 +1,44 @@
+/* given an array, return the max sum of absolute differences of adjacent elements of any permutation of given array.
+Sample Input 1 :
+2
+4
+1 2 8 3
+5
+1 2 3 4 5
+Sample Output 1 :
+16
+12
+Explanation of The Sample Input 1:
+For the first test case:
+
+The given array is : {1,2,8,3} for this array the maxSum will be of the permutation {1,8,2,3} which gives us maxSum = |1-8| + |2-8| + |8-3| + |3-1| = 16. So, we will return 16.  
+
+For the second test case:
+
+The given array is : {1,2,3,4,5} for this array the maxSum will be of the permutation {3,4,2,5,1} which gives us maxSum = |3-4| + |4-2| + |2-5| + |5-1| + |1-3| = 12. So, we will return 16. 
+Sample Input 2 :
+2
+6
+3 4 2 9 1 5
+2
+1 3
+Sample Output 2 :
+24
+4
+
+Approach:
+as can be seen max abs difference will be between smallest and biggest. So if we choose permutation having smallest followed by remaining biggest 
+then we can get the required. So we can sort them and calculate the differences of 2 extremes and approaching towards mid. some complications with first element,
+and another with mid element in case of odd number of elements, code is easier to understand than words here.
+
+#include <bits/stdc++.h> 
+int maxAbsSum(vector<int> &arr, int n) 
+{
+    sort(arr.begin(),arr.end());
+    int ans = abs(arr[0]-arr[n-1]) + abs(arr[0]-arr[n/2]) + (n%2==0 ? 0 : abs(arr[n/2]-arr[n/2+1]));
+    for(int i=1;i<n/2;++i) ans += abs(arr[i]-arr[n-i]) + abs(arr[i]-arr[n-i-1]);
+    return ans;
+}
+
+//T.C. : O(NlogN)
+//S.C. : O(1)
