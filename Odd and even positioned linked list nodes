@@ -1,0 +1,57 @@
+/* Odd and even positioned linked list nodes : given head of the list, reorder the list in such a way that Nodes at odd positions comes first.
+and will be followed by even positioned nodes. 
+Note: relative ordering of input can't be changed. and point of interest isn't only the nodes's value but nodes in itself.
+
+Sample input 1:
+2 
+1 2 3 -4 5 6 -1    
+-3 -1 
+Sample output 1:
+1 3 5 2 -4 6 -1
+-3 -1 
+Explanation of sample input 1:
+Test Case 1:
+
+Given linked list: ‘1 => 2 => 3 => -4 => 5 => 6’
+While maintaining the relative order of nodes as it is in the input, Nodes at odd positions are (1, 3, 5), and nodes at evens position are (2, -4, 6). 
+Modified linked list: ‘1 => 3 => 5 => 2 => -4 => 6’
+
+Test Case 2:
+
+Input linked list: ‘-3’
+The linked list contains only one node.
+Modified linked list: ‘-3’
+Sample input 2:
+2
+3 5 -2 1 7 -1
+-2 3 5 3 -1  
+Sample output 2:
+3 -2 7 5 1 -1
+-2 5 3 3 -1
+*/
+
+Approach:
+list till size 2 do not need reordering, hence return as it is.
+Now, we can iterate list with 2 pointers in ambition to seperate odd and even list. change pointers from start node and do the double jump and for even simultaneously,
+change the next pointer's even's next and double jump. 
+At last change the next pointer of last node of odd list to point to first node of even list.
+
+#include <bits/stdc++.h> 
+Node *oddEvenLinkedList(Node *head) {
+    if(!head || !head->next || !head->next->next) return head;
+    Node *odd = head, *even = head->next;
+    Node *oddLast = odd, *evenHead = even;
+    while(even){
+        oddLast = odd;
+        odd->next = even->next;
+        odd = odd->next;
+        even->next = odd ? odd->next : nullptr;
+        even = even ? even->next : even;
+    }
+    oddLast = odd ? odd : oddLast;
+    oddLast->next = evenHead;
+    return head;
+}
+
+T.C. : O(N)
+S.C. : O(1)
