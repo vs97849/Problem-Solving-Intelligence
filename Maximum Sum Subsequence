@@ -1,0 +1,70 @@
+/* Maximum Sum Subsequence : You are given an array “NUMS” consisting of N integers and an integer, K. 
+Your task is to determine the maximum sum of an increasing subsequence of length K.
+
+Note:
+1. The array may contain duplicate elements.
+2. The array can also contain negative integers.
+3. Every element of the subsequence must be greater than or equal to the previous element.
+The subsequence of an array is a sequence of numbers that can be formed by deleting some or no elements without changing the order of the remaining elements. 
+For example, if the given array “NUMS” = {1, 2, 5, 4, 8}, then {1, 2, 5, 4, 8}, {1, 5, 8}, {2} are some of the valid subsequences 
+whereas the sequence {4, 2} is not a valid subsequence as the order of the elements differ from the original array.
+
+Sample Input 1:
+1
+5 3
+1 3 -2 4 5
+Sample Output 1:
+12
+Explanation Of Sample Input 1:
+In the first test case, the subsequence having 3(index 1), 4(index 3), and 5(index 4) have the sum of 12, 
+which is the maximum amongst all increasing subsequences having a total of 3 elements. 
+Note that there can be more than one increasing subsequence with the required length, but we have to choose the one which has the maximum sum. 
+In this example, some other such subsequences will be :
+1 3 4    sum = 8
+1 3 5    sum = 9
+1 4 5    sum = 10
+3 4 5    sum = 12
+-2 4 5  sum = 7
+Thus, maximum value of the subsequence is 12.
+Sample Input 2:
+1
+4 3
+5 7 4 3
+Sample Output 2:
+-1
+Explanation Of Sample Input 2:
+In the first test case, there are a total of 4 subsequences having 3 elements. But none of these subsequences is increasing, so we output “-1”.
+*/
+
+Approach:
+it's similar to LIS (longest Increasing subsequence), only difference is we are restricted to give max sum and that too of a fix size 'k'
+So another complexity of extra iteration over k size subsequence have to be done.
+So proceed as in LIS, update dp when on increasing subsequence and update for each distance but keep a maxSum updated for only k sized subsequence.
+
+#include <bits/stdc++.h> 
+typedef long long ll;
+ll maximumSum(vector<int>& nums, int k) {
+    int numsLen = nums.size();
+    vector<vector<ll>>maxSum(numsLen, vector<ll>(k+1,-1));
+    for (int idx = 0; idx < numsLen; idx++) maxSum[idx][1] = nums[idx];
+    // like LIS, except nested size loop to get the maxsum instead of count.
+    for (int endIdx = 1; endIdx < numsLen; endIdx++) {
+        for (int prev = 0; prev < endIdx; prev++) {
+            if (nums[endIdx] >= nums[prev]) {
+                for (int size = 2; size <= k; size++) {
+                    if (maxSum[prev][size - 1] != -1) {
+                        maxSum[endIdx][size] = max(maxSum[endIdx][size], maxSum[prev][size - 1] + nums[endIdx]);
+                    }
+                }
+            }
+        }
+    }
+    ll maximumSum = -1;
+    for (int endIdx = 0; endIdx < numsLen; endIdx++) {
+        maximumSum = max(maximumSum, maxSum[endIdx][k]);
+    }
+    return maximumSum;
+}
+
+//T.C.: O(N*N*k)
+//S.C.: O(N*k)
