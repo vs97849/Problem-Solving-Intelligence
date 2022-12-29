@@ -1,0 +1,125 @@
+/*
+You’re given a list “names” of people’s names with the number of times these names appear in the list. Some names have multiple spellings. 
+For example, “John” and “Jon” are the same name but are listed separately. You’re given another list of “synonyms” containing the names that 
+have a synonymic relationship.
+
+Your task is to print a list of each name’s true frequency and, in the final list, out of the names that have synonymic relationships, 
+use the first name that appears in the “names” list.
+
+Note :
+1. If John and Jon are synonyms, and Jon and Johnny are synonyms, then John and Johnny are also synonyms. 
+2. While printing the true frequency, out of the names with synonymic relationships, use the names list first.
+Example:
+
+Names = 5, Synonyms = 3
+5
+john 15
+jon 12
+chris 13
+kris 4
+christopher 19
+3
+jon john
+chris kris
+chris Christopher
+
+The output for the above example will be: 
+john 27
+chris 36
+
+Since “jon” and “john” are synonyms, the final true frequency will be 15 + 12 = 27, and since john appears first in the first list, 
+we’ll use “john” as the real name. Also, “chris” and “kris” are synonyms, and since “chris” and “christopher” are also synonyms, 
+“chris” and “christopher” will also be synonyms, and the true frequency will be 13 + 4 + 19 = 36, and since “chris” appears first in the names list, 
+we’ll use it as the real name.
+
+Sample Input 1:
+1
+5
+john 15
+jon 12
+chris 13
+kris 4
+christopher 19
+3
+jon john
+chris kris
+chris christopher
+Sample Output 1:
+john 27
+chris 36
+Explanation Of Sample Input 1:
+For Test Case 1: As “john” and “jon” are synonyms of each other. Hence, total frequency will be 15 + 12 = 27. Similarly, “chris,” “kris,” and “christopher” are synonyms, and their total count of frequency will be 13 + 4 + 19 = 36.
+Sample Input 2:
+1
+5
+krish 15
+kriss 12
+chris 13
+kris 4
+christopher 19
+4
+krish kriss
+kriss kris 
+chris kris
+chris christopher
+Sample Output 2:
+krish 63
+Explanation Of Sample Input 2:
+For Test Case 1: All the given input names are synonyms of each other. Hence, the total count of frequency will be 15 + 12 + 13 + 4 + 19 = 63
+*/
+
+Approach:
+requirement seems to merge synonym names to one and print the total count. And the names's map aren't directly given but also transitive. a->b and b->c then a->c.
+so merging different sets when any of them matches. looks like union-find will be used. Which will make a leader parent of whole set.
+And final output should be in order of names appearing in first list.
+
+#include <bits/stdc++.h> 
+unordered_map<string,int>ranks;
+unordered_map<string,string>parent;
+string _find(string x){
+    if(parent[x]==x) return x;
+    return parent[x] = _find(parent[x]);
+}
+void _union(string &x, string &y){
+    string parX = _find(x);
+    string parY = _find(y);
+    if(ranks[parX] < ranks[parY]) swap(parX,parY);
+    parent[parY] = parX;
+    if(ranks[parX]==ranks[parY]) ++ranks[parX];
+}
+vector<string> babyNames(vector<string> &names, vector<int> &frequency, vector<vector<string>> &synonyms) {
+    unordered_map<string,int>namesHash;
+    int namesN = names.size();
+    for(int i=0;i<namesN;++i) namesHash[names[i]] += frequency[i];
+    for(int i=0;i<namesN;++i) {
+        ranks[names[i]] = 1; 
+        parent[names[i]] = names[i];
+    }
+    int synonymsN = synonyms.size();
+    for(int i=0;i<synonymsN;++i){
+        string &name1 = synonyms[i][0];
+        string &name2 = synonyms[i][1];
+        _union(name1,name2);
+    }
+    unordered_map<string,int>originalNamesHash;
+    for(auto &pr: namesHash){
+        const string &name = pr.first;
+        int freq = pr.second;
+        const string &parentName = _find(name);
+        originalNamesHash[parentName] += freq;
+    }
+    for(int i=0;i<namesN;++i){
+        const string &parentName = parent[names[i]];
+        auto itr = originalNamesHash.find(parentName);
+        if(itr!=originalNamesHash.end()){
+            cout<<names[i]<<" "<<to_string(itr->second)<<"\n";
+            originalNamesHash.erase(parentName);
+        }
+    }
+    parent.clear(); ranks.clear();
+    return {};
+}
+
+//T.C. : O(N)
+//S.C. : O(N)
+
