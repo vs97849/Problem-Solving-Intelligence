@@ -1,0 +1,64 @@
+/*
+PROBLEM STATEMENT
+You are given an array ‘ARR’ of size ‘N’ and an integer ‘M’. You have to split the array into ‘M’ non-overlapping, 
+non-empty subarrays such that the maximum of all the subarray’s sum is the minimum possible. 
+Your task is to return the minimum of the maximum of all the subarray’s sum.
+
+For Example:
+You are given ‘ARR’ = [7, 2, 6, 10, 8] and ‘M’ = 2. We split the array as [ 7, 2, 6] and [10, 8], 
+the maximum of 7 + 2 + 6  and 10 + 8 is 18, which is the minimum possible.
+
+Sample Input 1:
+2
+5 2
+7 2 6 10 8
+3 3
+1 4 4
+Sample Output 1:
+18
+4
+
+Sample Input 2:
+2
+5 2
+1 2 3 4 5
+2 2
+1 2
+Sample Output 2:
+ 9
+ 2
+ */
+ 
+ Approach:
+ array needs to be split into m subarrays such that min of largest sum can be found. doesn't seems any greedy to work here.
+ and trying out every possible break and splits will take around n*(n-1)C(m-2). which can be very high with m around half of n.
+ optimized: as we have to hunt for a correct min sum or target and that too in a given contiguous inteval then we can use binary search.
+ where low will be the min of largest some of any splits(m) (means the m=n) and high will be sum of all elements (means m=1) and mid = (low+high)/2
+ keeping mid and validating whether possible to split array into subarrays with <=mid(or target) and in <=m (number of splits) then we will hunt for more lesser.
+ means high = mid-1 (because if solution is possible with <m even with ==m then definitely required sum will be less in more splits.
+ on the other hand if chose mid is not sufficing with <=m (means case of >m) then we definitely have to split more means our chose mid was less hence 
+ hunt for bigger i.e. low = mid+1
+ 
+ #include <bits/stdc++.h> 
+int minSplitForGivenTarget(vector<int>&arr, int target){
+    int splitCt = 1, curWindowSum = 0;
+    for(int &x : arr){
+        if(x+curWindowSum > target) ++splitCt, curWindowSum = 0;
+        curWindowSum += x;
+    }
+    return splitCt;
+}
+int splitArray(vector<int> &arr, int m){
+    int lowLimit = *max_element(arr.begin(),arr.end());
+    int highLimit = accumulate(arr.begin(),arr.end(),0);
+    int ans = -1;
+    while(lowLimit<=highLimit){
+        int midLimit = (lowLimit+highLimit)/2;
+        int splitCount = minSplitForGivenTarget(arr,midLimit);
+        if(splitCount>m) lowLimit = midLimit + 1;
+        else ans = midLimit, highLimit = midLimit-1;
+    }
+    return ans;
+}
+
+ 
