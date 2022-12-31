@@ -1,0 +1,63 @@
+/*
+PROBLEM STATEMENT
+You are given a string (STR) of length N.
+
+Your task is to find the longest palindromic substring. If there is more than one palindromic substring with the maximum length, 
+return the one with the smaller start index.
+
+Note:
+A substring is a contiguous segment of a string.
+For Example :
+The longest palindromic substring of "ababc" is "aba", since "aba" is a palindrome and it is the longest substring of length 3 which is a palindrome. 
+There is another palindromic substring of length 3 is "bab". 
+Since starting index of "aba" is less than "bab", so "aba" is the answer.
+
+Sample Input 1:
+1
+abccbc
+Sample Output 1:
+bccb
+Explanation For Input 1:
+For string "abccbc" there are multiple palindromic substrings like a,b,c,cc,bccb,cbc. But bccb is of longest length. Thus, answer is bccb.
+Sample Input 2:
+1
+aeiou
+Sample Output 2:
+a
+Explanation For Input 2:
+For string "aeiou" there are multiple palindromic substrings like a,e,i,o,u, and all of the same length. But "a" palindromic substring has the minimum starting index. Thus, answer is "a".
+*/
+
+Approach:
+palindromic checks have to be done for considering odd and even length based
+so iterate over given string. for every index, get the odd and even length based longest possible palindrome substring, where current index can be taken as 
+mid and elongate the window by left and right pointers till the characters match.
+keep the ansLength and ansIndex to updated when new bigger length possible.
+
+#include <bits/stdc++.h> 
+int palindromL(string &s, int li, int ri){
+    int len = 0;
+    for(;li>=0 && ri<s.length() && s[li]==s[ri];--li,++ri,len+=2);
+    return len;
+    
+}
+string longestPalinSubstring(string &str)
+{
+    int oddL = 0, evenL = 0, ansL = 1, ansi=0;
+    for(int i=0;i<str.length();++i){
+        int oddL = 1 + palindromL(str,i-1,i+1);
+        int evenL = palindromL(str,i,i+1);
+        if(ansL < oddL){
+            ansL = oddL;
+            ansi = i - (oddL-1)/2;
+        }
+        if(ansL < evenL){
+            ansL = evenL;
+            ansi = i - evenL/2 + 1;
+        }
+    }
+    return str.substr(ansi,ansL);
+}
+
+//T.C. : O(N^2)
+//S.C. : O(1)
