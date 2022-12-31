@@ -1,0 +1,41 @@
+/*Problem Statement
+Given an integer array, exactly two elements appear only once, and all the other elements appear exactly twice. 
+Find the two elements that appear only once. You can return the answer in any order.
+Example 1:
+
+Input: nums = [1,2,1,3,2,5]
+
+Output: [3,5]
+
+Explanation: [5, 3] is also a valid answer.
+
+ 
+
+Example 2:
+
+Input: nums = [-1,0]
+
+Output: [-1,0]
+
+*/
+
+Approach:
+if we take xor of whole array then we get a^b (combined of the required 2 numbers).
+To extract both the numbers from the xor, let's pick a bit position where a^b has set bit. we know if that's a set bit, then
+a,b differ at this position. and out of all array elements, some elements will have set bits there and others not.
+So on that position, we can check for all elements if 1 then xoring all will filter out one of a or b and on xoring all numbers having 0 bits
+will filter out other .
+
+#include <bits/stdc++.h> 
+void twoNonRepeatingElements(int arr[], int n)
+{
+    int axorb = 0;
+    for(int i=0;i<n;++i) axorb ^= arr[i];
+    int rmsb = axorb & -axorb; //rightmost set bit
+    int a = 0, b = 0;
+    for(int i=0;i<n;++i){
+        if(rmsb & arr[i]) a ^= arr[i];
+        else b ^= arr[i];
+    }
+    cout<<min(a,b)<<" "<<max(a,b)<<"\n";
+}
