@@ -1,0 +1,58 @@
+/* Permutations of a string:
+You are given a string 'STR' consisting of lowercase English letters. 
+Your task is to return all permutations of the given string in lexicographically increasing order.
+
+String A is lexicographically less than string B, if either A is a prefix of B (and A ≠ B), or there exists such i (1 <= i <= min(|A|, |B|)), 
+that A[i] < B[i], and for any j (1 <= j < i) A[i] = B[i]. Here |A| denotes the length of the string A.
+
+For example :
+If the string is “bca”, then its permutations in lexicographically increasing order are { “abc”, “acb”, “bac”, “bca”, “cab”, “cba” }.
+For every test case, the permutations of the given string are printed in lexicographically increasing order separated by space.
+
+The output of each test case is printed in a separate line.
+
+Sample Input 1:
+2 
+aa
+abc
+Sample Output 1:
+aa
+abc acb bac bca cab cba
+Explanation For Sample Output 1:
+In the 1st test case, there is only 1 permutation of the given string that is possible i.e { “aa” }.
+
+In the 2nd test case, there are 6 permutations of the given string which are  { “abc”, “acb”, “bac”, “bca”, “cab”, “cba” }.
+Sample Input 2:
+2 
+bcb
+acaa
+Sample Output 2:
+bbc bcb cbb
+aaac aaca acaa caaa
+*/
+
+Approach:
+it simply needs every changes to be applied, no optimization seen.
+to generate every permutations we need to give chance to appear on every position.
+
+#include <bits/stdc++.h> 
+void help(string &str, int ind, set<string>&ansSet){
+    if(ind==str.size()){
+        ansSet.insert(str);
+        return;
+    }
+    for(int j=ind;j<str.size();++j){
+        swap(str[ind], str[j]);
+        help(str, ind+1, ansSet);
+        swap(str[ind], str[j]);
+    }
+}
+vector<string> uniquePrem(string& str){
+    set<string>ansSet;
+    help(str, 0, ansSet);
+    vector<string>ans(ansSet.begin(), ansSet.end());
+    return ans;
+}
+
+//T.C. : O(N!)
+//S.C. : O(N!)
