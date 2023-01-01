@@ -1,0 +1,21 @@
+/* find square root of a given number without using built-in function
+
+Approach:
+as min can be 1 and max can be x/2
+and so continuous set can be observed hence binary search applicable.
+
+#include <bits/stdc++.h> 
+int squareRoot(int a)
+{
+    if(a<2) return a;
+    int low = 1, high = a/2;
+    int ans = 0;
+    while(low<=high){
+        int mid = (low+high)/2;
+        int prod = mid * mid;
+        if(prod==a) return mid;
+        if(prod<a) ans = mid, low = mid+1;
+        else high = mid-1;
+    }
+    return ans;
+}
