@@ -1,0 +1,69 @@
+/* given array, perform k operations:
+in one operation: choose an element from only end(front or back) -> add to score and remove from array.
+return max score, can be obtained this way.
+
+Sample Input 1:
+2
+5 1
+10 2 8 9 2
+5 2
+10 5 6 7 9
+Sample Output 1:
+10 
+19
+Explanation Of Sample Input 1:
+Test Case 1 :  
+Given N = 5 and K = 1.
+arr = [10, 2, 8, 9, 2]
+Initial score = 0
+In the first operation choose 10 from the start and add it to the score.
+So final score = 10.
+
+Test Case 2 : 
+Given N = 5 and K = 2.
+arr = [10, 5, 6, 7, 9]
+Initial score = 0
+In the first operation choose 10 from the start and add it to the score.
+So score = 10 and arr = [5, 6, 7, 9]
+In the second operation choose 9 from the end and add it to the score.
+So final score = 10 + 9 = 19.
+Sample Input 2:
+2
+4 4
+10 2 2 2
+4 3
+10 1 7 9
+Sample Output 2:
+16
+26
+Explanation Of Sample Input 2:
+Test Case 1 :  
+Given N = 4 and K = 4.
+arr = [10, 2, 2, 2]
+Initial score = 0
+Here  N = K. So we can add all elements to our score by always picking array elements from the start.
+So final score = 10 + 2 + 2 + 2 = 16.
+
+Test Case 2 : 
+Given N = 4 and K = 3.
+arr = [10, 1, 7, 9]
+Initial score = 0
+In the first operation choose 10 from the start and add it to the score.
+So score = 10 and arr = [1, 7, 9]
+In the second operation choose 9 from the end and add it to the score.
+So score = 10 + 9 = 19 and and arr = [1, 7]
+In the third operation choose 7 from the end and add it to the score.
+So final score = 19 + 7 = 26.
+*/
+
+inline int maximizeScore(vector<int> &arr, int n, int k)
+{
+    int ksum = 0;
+    for(int i=0;i<k;++i) ksum += arr[i];
+    int ans = ksum;
+    for(int i=n-1;i>=0 && k; --i,--k){
+        ksum += arr[i] - arr[k-1];
+        ans = max(ans, ksum);
+    }
+    return ans;
+}
