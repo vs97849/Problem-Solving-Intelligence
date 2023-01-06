@@ -1,0 +1,99 @@
+/* Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+Example 1:
+
+
+Input: board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+Output: [["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+Explanation: Notice that an 'O' should not be flipped if:
+- It is on the border, or
+- It is adjacent to an 'O' that should not be flipped.
+The bottom 'O' is on the border, so it is not flipped.
+The other three 'O' form a surrounded region, so they are flipped.
+Example 2:
+
+Input: board = [["X"]]
+Output: [["X"]]
+
+Sample Input 1:
+2
+2 2
+XO
+OX
+5 3
+XXX
+XOX
+XXX
+XOX
+OOO
+Sample Output 1:
+XO
+OX
+XXX
+XXX
+XXX
+XOX
+OOO      
+Explanation For Sample Input 1:
+Test case 1:
+The Os present at [0,1] and [1,0] both lies on boundaries hence they remain as it is.
+
+Test case 2:
+The Os present at [4,0], [4,1], and [4,2] lies on boundaries hence they remain as it is.
+The O present at [3,1] is connected to O present at boundaries so it will also remain the same.
+The O present at [1,1] is not connected to any O which lies on the boundary so it will be considered as a captured region. Hence they will be flipped to X.
+
+Sample Input 2:
+2
+3 3
+OOO
+OXO
+OOO
+3 3
+XXX
+XOX
+XXX
+Sample Output 2:
+OOO
+OXO
+OOO
+XXX
+XXX
+XXX
+*/
+
+Approach:
+can flip only the cells or cells group of 'O' is surrounded by 'X' from 4 directions flip to 'X'.
+openness is defined as open way to boundary (means going 4 directions on riding through only 'O' and reach boundary). So can't flip.
+else if blocked by 'X' then region of 'O' will be flipped to 'X'.
+A tricky way can be used, first of all to see all directions and riding via 'O' everywhere reachable can be done using dfs.
+so instead of doing from every where do it from boundary where cells[i][j] == 'O'.
+
+int dir[4][2] = {     {-1,0},
+                {0,-1},     {0,1},
+                      {1, 0}
+                };
+void help(vector<vector<char>> &s, int n, int m, int i, int j){
+    if(i<0 || i==n || j<0 || j==m) return;
+    if(s[i][j]=='X' || s[i][j]=='V') return;
+    s[i][j] = 'V';
+    for(int di=0;di<4;++di) help(s,n,m,i+dir[di][0], j+dir[di][1]);
+}
+vector<vector<char>> captureRegion(vector<vector<char>> &s, int n, int m) 
+{
+    for(int i=0;i<m;++i) if(s[0][i]=='O') help(s,n,m,0,i);
+    for(int i=0;i<m;++i) if(s[n-1][i]=='O') help(s,n,m,n-1,i);
+    for(int i=0;i<n;++i) if(s[i][0]=='O') help(s,n,m,i,0);
+    for(int i=0;i<n;++i) if(s[i][m-1]=='O') help(s,n,m,i,m-1);
+    for(int i=0;i<n;++i){
+        for(int j=0;j<m;++j){
+            if(s[i][j]=='V') s[i][j] = 'O';
+            else s[i][j] = 'X';
+        }
+    }
+    return s;
+}
+
+//T.C. : O(N^2)
+//S.C. : O(1) (although if stack mem is counted then O(N^2)
