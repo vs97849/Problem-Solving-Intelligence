@@ -1,0 +1,77 @@
+/* Given a matrix, find the submatrix having max sum. return max sum.
+
+Sample Input 1 :
+1
+4 4
+-1 -2 -2 -2
+-5 -4 -1 -9 
+-3 -2 -6 -3
+-4 -3 -3 -2
+Sample Output 1 :
+-1
+Explanation Of Sample Output 1 :
+For sample test case 1 : 
+
+In this sample test case, the maximum sum submatrix in the matrix ‘MAT’ is at cell (0,0) with sum -1.
+Sample Input 2 :
+1
+3 3
+1 2 3
+4 5 6
+7 8 9
+Sample Output 2 :
+45
+Explanation Of Sample Output 1 :
+For sample test case 1 : 
+
+In this sample test case, the maximum sum submatrix in the matrix ‘MAT’ is having cells (0,0), (0,2), (2,0), (2,2) with sum 45.
+*/
+
+Approach:
+Brute Force: traverse matrix (n X m) on each cell checkout every matrix possible from there, keep the max sum updated and return.
+T.C. : O(N^4)
+Optimized:  As we can see we are recalculating / passing through a cell multiple times. Let's suppose on a raw we calculated the sum from i->j.
+Then to calculate from i->j+1 we can use i->j and add mat[row][j+1]. Same as we do in Kadane's algorithm (dynamic approach) which resuses the ans from 
+previous iteration (iterative dynamic approach). happening so because we can always reset our sum on getting cur_sum as negative O(N).
+Here, it differs only on point as we aren't finding max ans from n(row) number of arrays of m(col) size. But even if on a row, subarray from Ci->Cj is negative,
+on incuding below rows, there can be big numbers. Hence can't do in O(N*M). So We must need to consider column/window of every size. C1->C2 , c1->C3, .....
+C2->C3, C2->c4.......,  ...... ..... , Cm-1 -> Cm. Hence M^2 subarrays/windows. And on every window we can just extend every row(1->N). And use Kanden's algo
+to get max sum from all max sum from M^2 windows. So T.C. : O(N * M^2). 
+How we are able to get max sum without calculating window sum row-wise. That's becuase of Kadene's. And Will do pre-processing of sum accross every column for
+every row.
+Summary: Brute will consider every col and row combo and will do in O(N^2 * M^2)
+But Optimized/Kadane's will consider every col  combo and N row (optimizing on row). So, O(N * M^2).
+
+#include <bits/stdc++.h> 
+int kadane(vector<int>&vec, int n){
+    int ans = INT_MIN, sum = 0;
+    for(int i=0;i<n;++i){
+        sum += vec[i];
+        ans = max(sum,ans);
+        if(sum < 0){
+            sum = 0;
+        }
+    }
+    return ans;
+}
+int maxSumSubmatrix(vector<vector<int>>& mat, int n, int m) {
+    for(int i=0;i<n;++i){
+        for(int j=1;j<m;++j){
+            mat[i][j] += mat[i][j-1];
+        }
+    }
+    int ans = INT_MIN;
+    for(int start=0;start<m;++start){
+        for(int end=start;end<m;++end){
+            vector<int>vec(n,0);
+            for(int r=0;r<n;++r){
+                vec[r] = mat[r][end] - (start==0 ? 0 : mat[r][start-1]);
+            }
+            ans = max(ans, kadane(vec, n));
+        }
+    }
+    return ans;
+}
+
+//T.C. : O(N * M^2)
+//S.C. : O(N)
