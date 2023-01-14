@@ -1,0 +1,53 @@
+/* given list of {x1,x2,ht} for buildings considering them perfect rectangular shape based on 0 x axis. if seen from distant.
+Only line passing horizontally over buildings surface will be skylines. skyline will cover only the boundaries.
+So consider a software which draws skyline horizontally(initially at 0th height, if you provide it the correct minimum change points then 
+it can draw a perfect boundary of buildings.
+
+Input: buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]
+Output: [[2,10],[3,15],[7,12],[12,0],[15,10],[20,8],[24,0]]
+Explanation:
+Figure A shows the buildings of the input.
+Figure B shows the skyline formed by those buildings. The red points in figure B represent the key points in the output list.
+Example 2:
+
+Input: buildings = [[0,2,3],[2,5,3]]
+Output: [[0,3],[5,0]]
+ 
+Constraints:
+
+1 <= buildings.length <= 104
+0 <= lefti < righti <= 231 - 1
+1 <= heighti <= 231 - 1
+buildings is sorted by lefti in non-decreasing order.
+*/
+
+Approach:
+as starting from left we have to include the considerable changed heights. So those can be either start point or end point of a building.
+In this way smaller/shadowed will be ignored. So highest boundary at current point will be taken.
+to keep track of highest heights or heights in order, we can take multisets as same heights can be there. 
+
+#include <bits/stdc++.h> 
+vector<vector<int>> getBuildingSkyline(vector<vector<int>>& buildings)
+{
+    vector<pair<int,int>>xy; //x and y cords 
+    for(vector<int>&b : buildings){
+        xy.push_back({b[0],-b[2]});
+        xy.push_back({b[1],b[2]});
+    }
+    sort(xy.begin(), xy.end());
+    multiset<int, greater<int>>pq{0}; //for height order
+    int onGoingHt = 0;
+    vector<vector<int>>ans;
+    for(pair<int,int>&pr : xy){
+        int curX = pr.first;
+        int curY = pr.second;
+        if(curY<0) pq.insert(-curY);
+        else pq.erase(pq.find(curY));
+        int topHt = *pq.begin();
+        if(onGoingHt != topHt){
+            onGoingHt = topHt;
+            ans.push_back({curX,topHt});
+        }
+    }
+    return ans;
+}
