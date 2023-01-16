@@ -1,0 +1,63 @@
+/* given a String, partition such that every parted string in a partition permutation is palindrom. So multiple permutations of partition
+is possible return all such permutations
+
+Sample Input 1:
+2
+aaC
+bb
+Sample Output 1:
+a a C
+aa C
+b b
+bb
+Explanation For Input 1:
+In the first test case, there are two partitions in which all substrings of the partition are palindromes. The partitions are {“a”, ”a”, ”C”} and {“aa”, “C”}.
+In the second test case, there are two partitions in which all substrings of the partition are palindromes. The partitions are {“b”, ”b”} and {“bb”}.
+Sample Input 2:
+2
+BaaB
+abc
+Sample Output 2:
+B a a B
+B aa B
+BaaB
+a b c
+Explanation For Input 2:
+In the first test case, there are three partitions in which all substrings of the partition are palindromes. The partitions are {“B”, ”a”, “a”, ”B”}, {“B”, “aa”, “B”}, {“BaaB”}.
+In the second test case, there is only one partition in which all substrings of the partition are palindromes. The partition is {“a”, “b”, “c”}.
+*/
+
+Approach:
+There seems no optimization, just have to consider every permutations, So will go for recusion will look at each parted string if palindrome,
+Then will look/check for remaining string for palindrome, if going such it reaches the end then this permutation is valid and will add to ans.
+So will continue for other permutation by changing the partition position.
+
+#include <bits/stdc++.h> 
+bool isPalindrom(string &str){ 
+    for(int i=0,j=str.length()-1;i<j;++i,--j) if(str[i]!=str[j]) return false;
+    return true;
+}
+void help(string &S, int i, vector<string> tmp, vector<vector<string>>&ans){
+    if(i==S.length()){
+        ans.push_back(tmp);
+        return;
+    }
+    for(int in=i;in<S.length();++in){
+        string str = S.substr(i,in-i+1);
+        if(isPalindrom(str)){
+            tmp.push_back(str);
+            help(S,in+1,tmp,ans);
+            tmp.pop_back();
+        }
+    }
+}
+vector<vector<string>>partition(string &S)
+{
+    vector<vector<string>>ans;
+    vector<string>tmp;
+    help(S,0,tmp,ans);
+    return ans;
+}
+
+//T.C.: O(N* 2^N)
+//S.C. : O(N*N)
