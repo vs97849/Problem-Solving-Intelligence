@@ -1,0 +1,75 @@
+/* You are given a set of intervals [ai, bi ] of length N, where i 𝞊 { 1, 2, ….. N }. 
+Now you have to find the maximum length of the set of disjoint intervals.
+Two intervals [a, b], and  [c, d] where a <= b and c <= d are said to be disjoint if they do not have any point in common. 
+In the mathematical form, we can write as:
+Two intervals [a, b] and [c, d] are said to be disjoint if,,→ a <= b < c <= d  Or, →  [a, b] ⋂ [c, d] = 𝟇
+
+Input:  N and a  set of intervals of length N, 
+
+           Intervals = {[1, 8], [2, 5], [7, 8]}
+Output:  2
+Explanation: The maximum set of disjoint intervals is 2 as we see that [2, 5], [7, 8] form the maximum set of disjoint intervals.
+
+Sample Input 1 :
+2
+3
+1 6
+2 4
+6 8
+4
+1 5
+2 3
+4 7
+8 9
+Sample Output 1 :
+2
+3
+Explanation Of Sample Input 1 :
+Test case 1 :
+The intervals [1,6] and [2,4] overlap, in this case, we should select [2,4] because if we include [1,6], 
+then we can not select [6,8]. So the desired intervals are [2,4] and [6,8].
+
+Test case 2 :
+The intervals [1,5] and [2,3] overlap, in this case, we should select [2,3] because if we include [1,5], 
+then we can not select [4,7]. So the selected intervals are [2,3], [4,7] and [8,9].
+Sample Input 2 :
+2
+3
+1 8
+2 5
+7 8
+2
+1 5
+2 6
+Sample Output 2 :
+2
+1
+*/
+
+Approach:
+goal is to maximize the number of intervals. in case of all disjoints intervals, it will be best case and ans will be the size of the input.
+But there can be overlapping intervals which we have to smartly choose an interval to exclude other. To maximize, we will try to choose most shrinked/small
+intervals first and exclude the overlapping one by this.
+So if we sort the input by end pt of intervals then it will meet the purpose as it will have the least chance of being overlapped with others.
+
+#include <bits/stdc++.h> 
+bool comp(pair<int,int>&a, pair<int,int>&b){
+    if(a.second < b.second) return true;
+    if(a.second > b.second) return false;
+    return a.first >= b.first;
+}
+int disjointIntervals(vector<pair<int, int>> &arr, int n) {
+    sort(arr.begin(),arr.end(),comp);
+    int ans = 0;
+    pair<int,int>curPr = {0,0};
+    for(pair<int,int>&pr : arr){
+        if(curPr.second < pr.first){
+            ++ans;
+            curPr = pr;
+        }
+    }
+    return ans;
+}
+
+//T.C. : O(NlogN)
+//S.C. : O(1)
