@@ -1,0 +1,100 @@
+/* an arbitrary tree is given,  a node can have any number of childs. undirected edges.
+   Find the max distance possible between any two nodes. (distance between any two nodes is number of edges to reach between them)
+   Nodes are from 0 -> N-1. And tree is rooted at 0th Node.
+   
+Sample Input 1 :
+1
+10
+0 1
+0 2
+0 3
+1 4
+2 5
+2 6
+4 7
+4 8
+6 9
+Sample Output 1 :
+6
+Explanation For Sample Input 1 :
+For the first test case, the tree is shown below. The longest path in the tree is {7, 4, 1, 0, 2, 6, 9} with a length of 6.
+
+Sample Input 2 :
+1
+6
+0 1
+1 2
+1 3
+2 4
+3 5
+Sample Output 2 :
+4
+Explanation For Sample Input 2 :
+For the first test case, the tree is shown below. The longest path in the tree is {4, 2, 1, 3, 5} with a length of 4.
+*/
+
+Approach:
+Brute Force:
+      do a bfs or dfs and find distance between each pairs and return max at last. T.C. O(N^2)
+   
+Optimized:
+      as we don't know from which node we can reach wich node. all directly connected neighbours are at equi-distant. 
+      starting from a node (dist=0) and increasing range and going beyond we can maintain max distance  till whole tree is traversed.
+      hence BFS is better. 
+      And here is a trick. as tree is rooted at 0, if we start from root and find a max-distant node following BFS. Then this will defnitely one of
+      the pair of max-distant node. So after receiving this node we can again do a final BFS to find the max distant Node.
+
+#include<bits/stdc++.h>
+using namespace std;
+
+pair<int,int> getMaxPointAndLargestDistanceFromCurrentPoint(int currentPoint,vector<int> edges[],int n)
+{
+    int dist[n];
+    memset(dist,-1,sizeof(dist));
+    queue<int> q;
+    q.push(currentPoint);
+    dist[currentPoint] = 0;
+    while(!q.empty())
+    {
+        int pointAtQueueFront = q.front();
+        q.pop();
+        for(auto child:edges[pointAtQueueFront])
+        {
+            if(dist[child]==-1)
+            {
+                dist[child]=dist[pointAtQueueFront] + 1;
+                q.push(child);
+            }
+        }
+    }
+    int maxPoint=0,maxDistance = 0;
+    for(int i=0;i<n;i++)
+    {
+        if(dist[i]>maxDistance)
+        {
+            maxDistance = dist[i];
+            maxPoint = i;
+        }
+    }
+    return {maxPoint,maxDistance};
+}
+
+int largestDistance(int n, vector<vector<int>> &edges)
+{
+    if(!n)
+        return 0;
+    vector<int> graph[n];
+
+    for(auto i:edges)
+    {
+        graph[i[0]].push_back(i[1]);
+        graph[i[1]].push_back(i[0]);
+    }
+    pair<int,int> f = getMaxPointAndLargestDistanceFromCurrentPoint(0,graph,n);
+    pair<int,int> s = getMaxPointAndLargestDistanceFromCurrentPoint(f.first,graph,n);
+    return s.second;
+}
+
+//T.C. : O(N) (2 linear iteration or 2 BFS)
+//S.C. : O(N) (looks like we have used treeHash array of vector, so some can think as it's N^2 but it's a tree, hence we can't have more than N-1 edges.
+               So it's O(N).
