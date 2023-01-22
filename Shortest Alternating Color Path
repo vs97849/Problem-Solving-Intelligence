@@ -1,0 +1,103 @@
+/* Consider a directed graph of ‘N’ nodes where each node is labeled from ‘0’ to ‘N - 1’. 
+Each edge of the graph is either ‘red’ or ‘green’ colored. The graph may contain self-edges or parallel edges. 
+You are given two arrays, ‘redEdges’ and ‘greenEdges’, whose each element is of the form [i, j], denoting an edge from node ‘i’ to node ‘j’ of the respective color.
+Your task is to compute an array ‘answer’ of size ‘N’, where ‘answer[i]’ stores the length of the shortest path from node ‘0’ to node ‘i’ such that 
+the edges along the path have alternate colors. If there is no such path from node ‘0’ to ‘i’, then ‘answer[i] = -1’.
+
+Example:
+N = 4, redEdges = [[0, 1], [2, 3]], greenEdges = [[1, 2], [1, 3]]
+
+The shortest paths for each node from node ‘0’ are:
+1: 0->1         Length: 1
+2: 0->1->2      Length: 2
+3: 0->1->3      Length: 2
+So, the ‘answer’ array will be: [0, 1, 2, 2].
+
+Example:
+N = 4, redEdges = [[0, 1], [2, 3]], blueEdges = [[1, 2], [1, 3]]
+
+The shortest paths for each node from node ‘0’ are:
+1: 0->1         Length: 1
+2: 0->1->2      Length: 2
+3: 0->1->3      Length: 2
+So, the ‘answer’ array will be: [0, 1, 2, 2].
+
+Sample Input 1:
+1
+3 1 1
+0 1
+1 2
+Sample Output 1:
+0 1 2
+Explanation Of Sample Input 1:
+The given graph is as below:
+
+In the given graph, it is clearly visible the alternating path distance of nodes from the 0-labelled node are 0, 1 and 2 respectively.
+Sample Input 2:
+1
+3 2 1
+0 2
+0 1
+2 1
+Sample Output 2:
+0 1 1
+Explanation Of Sample Input 2:
+The given graph is as below:
+
+In the given graph, alternating path lengths of nodes with label 0 and 2 are 0 and 1 respectively. 
+But there are two alternative paths that exist for the node with label 1, but we need to consider only the shorter one, 
+hence the shortest alternating path for the node with label-1 is 1.
+*/
+
+Approach:
+I -> problem is directly saying to find out shortest distance from a start node to every other node, hence Dijkstra can be used, where 
+     in this case every edge distance is same. ere we might have to visit a node more than once as there can be parallel edges due to
+     different colors. T.C. : O(E + VlogV)
+     
+II -> as the edges weights are not there so distance for all single edge is same, So problem can be reduced to BFS.
+      as shortest distance from source 0 will be the adjacent or directly connected nodes hence BFS fashion traversal and update of distance will be sufficent.
+      during BFS, a node will be marked visited as accordingly to the color of current visit. and new neighbor will be added to the queue if that new color
+      isn't visited for new node and new color is not same as cur node's color. On popping a node means that was successfully reachable from source 0.
+      meanwhile updated steps will be the ans/dist for that node. as we just have to get the shortest dist for all node. coming back to cur node can't be 
+      the ans. and whatever are left are not reachable.
+      
+#include <bits/stdc++.h> 
+#define INF INT_MAX
+void bfsExtended(vector<vector<pair<int,int>>>&graph, int n, vector<int>&dist)
+{
+    queue<vector<int>>Q;
+    Q.push({0,-1,0}); //(node num, color from which edge you reached here, min steps to reach here)
+    vector<vector<bool>>visited(n,vector<bool>(2,false));
+    visited[0][0] = visited[0][1] = true;
+    dist[0] = 0;
+    while(!Q.empty()){
+        vector<int>&node = Q.front();
+        int u = node[0]; 
+        int color = node[1]; 
+        int steps = node[2];
+        Q.pop();
+        dist[u] = dist[u]==-1 ? steps : dist[u];
+        if(u!=0) visited[u][color] = true;
+        for(pair<int,int>&pr : graph[u]){
+            if(!visited[pr.first][pr.second] && color != pr.second){
+                Q.push({pr.first,pr.second,steps+1});
+            }
+        }
+    }
+}
+vector<int> shortestAlternatingPath(int n, int r, int g, vector<vector<int>> &redEdges, vector<vector<int>> &greenEdges) 
+{
+    vector<vector<pair<int,int>>>graph(n);
+    for(vector<int> &edge : redEdges) {
+      graph[edge[0]].push_back({edge[1], 0});
+    }
+    for(vector<int>&edge : greenEdges) {
+      graph[edge[0]].push_back({edge[1], 1});
+    }
+    vector<int>ans(n,-1);
+    bfsExtended(graph, n, ans);
+    return ans;
+}
+
+//T.C. : O(N + E) : as a node can be accessed at most 2wice and all neighbours is accessed in bfs (inner loop)
+//S.C. : O(N + E) : Queue will have O(N) but adjacency list will have O(N+E)
