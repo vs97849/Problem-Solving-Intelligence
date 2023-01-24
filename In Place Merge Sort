@@ -1,0 +1,47 @@
+/* Merge sort but without extra space other than recursive stack func call or no extra space used in merge part.
+
+Approach:
+will proceed same with partition/cut part in merge part, won't use any extra array, but will use same array, will be difficult to think at first.
+but till you get smaller in left part then it's find else you will pick right's smallest and place in left side and take left side's element and 
+will do insertion in right as they will be sorted too.
+
+#include <bits/stdc++.h> 
+void insertInSorted(vector<int>&arr, int k, int si, int ei){
+    while(si<ei && arr[si+1]<=k){
+        arr[si] = arr[si+1];
+        ++si;
+    }
+    arr[si] = k;
+}
+void merge(vector<int>&arr,int l, int m, int h){
+    if(l>=h) return;
+    if(l+1==h) {
+        if(arr[l]>arr[h]) swap(arr[l],arr[h]);
+        return;
+    }
+    int i=l,j=m+1;
+    while(i<=m){
+        if(arr[i]>arr[j]) {
+            int k = arr[i];
+            arr[i] = arr[j];
+            insertInSorted(arr,k,j,h);
+        }
+        ++i;
+    }
+}
+void cut(vector<int>&arr, int l, int h){
+    if(l>=h) return;
+    int m = (l+h)/2;
+    cut(arr,l,m);
+    cut(arr,m+1,h);
+    merge(arr,l,m,h);
+}
+vector<int> mergeSort(vector<int> &arr)
+{
+    int n = arr.size();
+    cut(arr,0,n-1);
+    return arr;
+}
+
+//T.C. : O(N^2 LogN)
+//S.C. : O(1) excluding cut part, but with cut part recursive stack uses O(N)
