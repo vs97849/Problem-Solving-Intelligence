@@ -1,0 +1,53 @@
+/* find min element in rotated sorted array 
+Sample Input 1:
+2
+7 
+4 6 9 11 1 2 2
+5 
+4 5 2 2 4
+Sample Output 1:
+1
+2
+Explanation Of Sample Input 1:
+For the first test case,
+
+The minimum value present in ‘ARR’ is 1. Hence, the answer is 1.
+
+For the second test case:
+
+The minimum value present in ‘ARR’ is 1. Hence, the answer is 2.
+Sample Input 2:
+2
+8 
+9 9 9 10 2 3 6 6 
+6 
+4 6 7 9 2 4
+Sample Output 2:
+2
+2
+*/
+
+Approach:
+   1st: Traverse the list and update the min element with current if required. T.C. O(N).
+   
+   2nd OPtimized: As Array is sorted but rotated so straightforward binary search can't be applied. But little modification to  binary can be done.
+                  As at any point/index, there are 2 possibility, current element is bigger than left or lesser. If bigger than you can be on either side
+                  of pivot, so to check the side, we can compare it with the left element of the current parted array. otherwise 2nd case is the found point/
+                  pivot point.
+                  
+#include <bits/stdc++.h> 
+int help(vector<int>&arr, int l, int r){
+    if(l==r) return arr[l];
+    if(l+1==r) return min(arr[l],arr[r]);
+    int m = (l+r)/2;
+    if(arr[m]<arr[m-1]) return arr[m];
+    if(arr[m]<arr[l]) return help(arr, l, m);
+    else return help(arr, m, r);
+}
+int ninjaChallenge(int n, vector<int> &arr)
+{
+    return help(arr,0,n-1);
+}
+
+// T.C. : O(LogN)
+// S.C. : O(1)
