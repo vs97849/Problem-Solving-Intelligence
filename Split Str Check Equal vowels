@@ -1,0 +1,38 @@
+/* given a string of even length, tell if 2 equal halves are having same number of vowels or not? */
+
+Sample Input 1:
+2
+codingninjas
+helloworld
+Sample Output 2:
+True
+False
+Explanation:
+For the first test case, ‘str’= ‘codingninjas’, when we split this string we get, ‘coding’ and ‘ninjas’ which both contain 2 vowels each. Hence the answer is ‘True’.
+
+For the second test case, ‘str’= ‘helloworld’, when we split this string we get ‘hello and ‘world’, which contain 2 and 1 vowels respectively. Hence the answer is ‘False’.
+Sample Input 2:
+2
+Aa
+AbbaaA
+Sample Output 2:
+True
+False
+*/
+
+#include <bits/stdc++.h>
+unordered_set<char> vowels { 'a', 'e', 'i', 'o', 'u', 
+                             'A', 'E', 'I', 'O', 'U'};
+bool splitString(string &str){
+    int vowelsCt = 0, i=0;
+    for(;i<str.length()/2;++i){
+        vowelsCt += vowels.find(str[i]) != vowels.end() ;
+    }
+    for(;i<str.length();++i){
+        vowelsCt -= vowels.find(str[i]) != vowels.end() ;
+    }
+    return vowelsCt == 0;
+}
+
+//T.C. : O(N)
+//S.C. : O(1)
