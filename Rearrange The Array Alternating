@@ -1,0 +1,78 @@
+/* array of integers is given, there may be duplicates, so return any possible arrangement such that no duplicates occur adjacent to each other. 
+   if not possible return some junk.
+   
+Sample Input 1 :
+2
+5
+10 10 10 32 32
+6
+89 47 89 47 42 21
+Sample Output 1 :
+YES
+YES
+Explanation To Sample Input 1 :
+For the first test case, We can put 32 in between 10 and arrangement looks like. {10,32,10,32,10}.
+
+For the second test case, We have to arrange only 47 and 89 because the rest of the element is unique in itself. So one arrangement looks like { 89, 47, 89, 47, 42, 21}.
+Sample Input 2 :
+3
+5
+10 7 21 5 1
+6
+21 21 21 12 12 21
+6
+10 10 10 20 20 20
+Sample Output 2 :
+YES
+NO
+YES
+Explanation To Sample Input 2 :
+For the first test case, all the elements have the same frequency, so you can return any arrangement of those elements, i.e. {1, 7, 21, 5, 10}.
+
+For the second test case, we can not rearrange the given array/list because after rearranging {21,12,21,12}, we will be stuck with two 21. There is no way to arrange them.
+
+For the third test case, we can put all the 10 in between 20. So there will be no such adjacent existence which will be the same.
+*/
+
+Approach:
+    first rule out the not possible case, else go for building the arrangement. (array length is n)
+    not possible case would be when any element, X's frequency is more than ceil(n/2).
+    collect the frequency of all the elements. arrange them in decreasing order of their frequency. ( can use priority queue. )
+    start from 0th index and place them ,till the frequency, in alternating manner. on reaching end, start from 1th index and start placing alternating.
+    This way all will be perfectly filled. Because there is not 2 kind of places: either even(0,2,4,6,...) or odd(1,3,5,7,....)
+    
+#include <bits/stdc++.h> 
+vector<int> rearrange(vector<int>& num)
+{
+    unordered_map<int,int>numHash;
+    int maxCt = 1;
+    for(int &x : num){
+        maxCt = max(maxCt, ++numHash[x]);
+    }
+    int n = num.size();
+    if(maxCt > ceil(n/2.0)) return {-2147483648};
+    priority_queue<pair<int,int>>pq;
+    for(auto &pr : numHash){
+        pq.push({pr.second, pr.first});
+    }
+    int i=0;
+    while(!pq.empty()){
+        pair<int,int>pr = pq.top();
+        pq.pop();
+        int f = pr.first, x = pr.second;
+        for(;i<n && f;i+=2){
+            num[i] = x;
+            --f;
+        }
+        i = i>=n ? 1 : i;
+        while (f && i < n) {
+            num[i] = x;
+            --f;
+            i += 2;
+        }
+    }
+    return num;
+}
+
+//T.C. : O(N)
+//S.C. : O(N) 
