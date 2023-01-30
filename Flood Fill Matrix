@@ -1,0 +1,66 @@
+/*
+PROBLEM STATEMENT
+Ninja has found his new passion for photography. He has clicked some really good photos but in one of his images, 
+he doesn’t like the color of a particular region. So, he decides to change the color of that region. Can you help him with this task?
+The image is represented in the form of a 2D array of size M * N. Each pixel in the image is a positive integer. 
+Ninja has given you the coordinates (row and column) of a certain pixel and the new color value. 
+You need to replace the color of the given pixel and all adjacent same-colored pixels with the new color.
+
+Note:
+Two pixels are adjacent if they are connected to each other in any of the four directions: up, down, left, or right.
+Diagonal pixels are not considered adjacent.
+
+Sample Input 1 :
+2 
+3 2
+1 1 3
+0 0
+1 1
+1 0
+2 2
+0 0 5
+9 9
+0 0    
+Sample Output 1 :
+0 0
+3 3
+3 0
+5 5
+0 0
+Sample Input 2 :
+1
+4 3
+1 1 4
+0 0 2
+1 1 2
+1 0 2
+2 2 1
+Sample Output 2 :
+0 0 2
+4 4 2
+4 0 2
+2 2 1
+Explanation :
+For the first test case, we will replace all 1’s with 4 except the one which is at bottom right corner i.e. 3,3. 
+*/
+
+Approach:
+    DFS or backtracking will work, start node is only one. and all 4 directional cells are direct undirected edges. 
+    
+#include <bits/stdc++.h> 
+void dfs(vector<vector<int>>&image, int n, int m, int i, int j, int p, int c){
+	if(i<0 || j<0 || i==n || j==m || image[i][j]!=c) return;
+	image[i][j] = -1;
+	dfs(image,n,m,i+1,j,p,c);
+	dfs(image,n,m,i-1,j,p,c);
+	dfs(image,n,m,i,j-1,p,c);
+	dfs(image,n,m,i,j+1,p,c);
+	image[i][j] = p;
+}
+vector<vector<int>> floodFill(vector<vector<int>> &image, int n, int m, int x, int y, int p) {
+	dfs(image, n, m, x, y, p, image[x][y]);
+	return image;
+}
+
+//T.C. : O(M x N)
+//S.C. : O(1)
