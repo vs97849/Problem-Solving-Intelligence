@@ -1,0 +1,84 @@
+/* Minimum Cost To Make String Valid
+Ninja has been given a string ‘STR’ containing either ‘{’ or ‘}’. 'STR’ is called valid if all the brackets are balanced. 
+Formally for each opening bracket, there must be a closing bracket right to it.
+
+For Example:
+“{}{}”, “{{}}”, “{{}{}}” are valid strings while “}{}”, “{}}{{}”, “{{}}}{“ are not valid strings.
+Ninja wants to make ‘STR’ valid by performing some operations on it. In one operation, he can convert ‘{’ into ‘}’ or vice versa, 
+and the cost of one such operation is 1.
+
+Your task is to help Ninja determine the minimum cost to make ‘STR’ valid.
+
+For Example:
+Minimum operations to make ‘STR’ =  “{{“ valid is 1.
+In one operation, we can convert ‘{’ at index ‘1’ (0-based indexing) to ‘}’. The ‘STR’ now becomes "{}" which is a valid string.
+
+Note:
+Return -1 if it is impossible to make ‘STR’ valid.
+*/
+
+Sample Input 1:
+2
+{{{}
+{{}{}}
+Sample Output 1:
+1
+0
+Explanation For Sample Input 1:
+For the first test case:
+The two valid strings that can be obtained from  ‘STR’ using minimum operations “{{}}”   and “{}{}”. 
+Ninja can transform ‘STR’ to “{{}}” by performing the following operations:
+Convert ‘{’ at index 2 to ‘}’.
+
+Ninja can transform ‘STR’ to “{}{}” by performing the following operations:
+Convert ‘{‘ at index 1 to ‘}’.
+The minimum number of operations in transforming ‘STR’ to either of the two valid strings is 1.So, the total cost is 1.
+
+For the second test case:
+Given ‘STR’ is already valid so the minimum number of 
+operations required is 0.
+So, the total cost is 0.
+Sample Input 2:
+3
+{}}{}}
+{{{{
+{{{}}
+Sample Output 2:
+1
+2
+-1
+
+Approach:
+    if odd length then no possible chance to balance
+    observe an unbalanced string. if at an arbitrary point if we get '{' then we don't know what's ahead, so we can keep it into stack, as we can expect
+    corresponding closure '}'.
+    but if we get '}':
+      1) if stack empty, then no option left, we have to turn it, so add 1 to ans and push '{' into stack
+      2) if stack not empty, then simply pop from stack
+    
+    at last, there can be unclosed '{', so whatever number they are, we can balance then by converting half of them.
+   
+#include <bits/stdc++.h> 
+int findMinimumCost(string &str) {
+  int l = str.length();
+  if(l%2) return -1;
+  int ans = 0;
+  stack<char>stk;
+  for(char &c : str){
+    if(c=='{') stk.push(c);
+    else{
+      if(stk.empty()){
+        ++ans;
+        stk.push('{');
+      }
+      else{
+        stk.pop();
+      }
+    }
+  }
+  return ans + stk.size()/2;
+}
+
+//T.C. : O(N)
+//S.C. : O(N)  for stack use
+    
