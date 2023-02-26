@@ -1,0 +1,82 @@
+/* Count Distinct Substrings
+Given a string 'S', you are supposed to return the number of distinct substrings(including empty substring) of the given string. You should implement the program using a trie.
+
+Note :
+A string ‘B’ is a substring of a string ‘A’ if ‘B’ that can be obtained by deletion of, several characters(possibly none) from 
+the start of ‘A’ and several characters(possibly none) from the end of ‘A’. 
+
+Two strings ‘X’ and ‘Y’ are considered different if there is at least one index ‘i’  such that 
+the character of ‘X’ at index ‘i’ is different from the character of ‘Y’ at index ‘i’(X[i]!=Y[i]).
+
+Sample Input 1 :
+2
+sds
+abc
+Sample Output 1 :
+6
+7
+Explanation Of Sample Input 1 :
+In the first test case, the 6 distinct substrings are { ‘s’,’ d’, ”sd”, ”ds”, ”sds”, “” }
+
+In the second test case, the 7 distinct substrings are {‘a’, ‘b’, ‘c’, “ab”, “bc”, “abc”, “” }.
+Sample Input 2 :
+2
+aa
+abab
+Sample Output 2 :
+3
+8
+Explanation Of Sample Input 2 :
+In the first test case, the two distinct substrings are {‘a’, “aa”, “” }.
+
+In the second test case, the seven distinct substrings are {‘a’, ‘b’, “ab”, “ba”, “aba”, “bab”, “abab”, “” }
+*/
+
+Approach: 
+  explore every length substring starting from every position. and checkin for unqiue before incrementing the answer.
+  For checking previously occurred string, we can use the hash. space : O(N)
+  
+  In another approach for validating previously occurred string: we can use Trie, we word end found on current item, that means previously occurred.
+  
+#include<unordered_set>
+struct TrieNode{
+    bool we;
+    TrieNode *children[26];
+    TrieNode(){
+        we = false;
+        for(int i=0;i<26;++i) children[i] = nullptr;
+    }
+};
+bool insertStrInTrie(TrieNode *itr, char c, TrieNode *(&curPtr)){
+    int in = c - 'a';
+    if(itr->children[in] == nullptr){
+        auto *tmp = new TrieNode();
+        itr->children[in] = tmp;
+        itr = tmp;
+    }
+    else{
+        itr = itr->children[in];
+    }
+    bool isNewWord = itr->we != 1;
+    itr->we = 1;
+    curPtr = itr;
+    return isNewWord;
+}
+
+int countDistinctSubstrings(string &s)
+{
+    int n = s.length();
+    int ans = 1;
+    TrieNode *root = new TrieNode();
+    for(int i=0;i<n;++i){
+        TrieNode *curPtr = root;
+        for(int l=1;i+l<=n;++l){
+            int in = i+l-1;
+            if(insertStrInTrie(curPtr, s[in], curPtr)) ++ans;
+        }
+    }
+    return ans;
+}
+
+//T.C.: O(N^2)
+//S.C.: O(length(all distinct words)
