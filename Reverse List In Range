@@ -1,0 +1,63 @@
+/* Given a linked List, and range in form of 2 integers position of nodes: [low, high]. reverse list in the positional range. 
+Sample Input 1 :
+2
+1 3 2 4 6 5 -1
+2 3
+1 3 7 4 -1
+2 4
+Sample Output 1 :
+1 2 3 4 6 5
+1 4 7 3
+Explanation For Sample Input 1 :
+For first test case :
+
+Reversing nodes 2 and 3 : 2 3
+Resultant linked list : 1 2 3 4 6 5   
+
+For second test case :
+
+Reversing nodes 2 and 4 : 4 7 3
+Resultant linked list : 1 4 7 3  
+Sample Input 2 :
+2
+1 3 4 5 -1
+1 2
+1 2 2 -1
+2 3
+Sample Output 2 :
+3 1 4 5
+1 2 2
+*/
+
+Approach: reach both positions and store both the nodes. isolate/break the list in between the nodes.
+          reverse the isolated list. and connect the parted lists.
+          
+Node *reverseList(Node *head, int high, Node *&highItr, Node *&highNext){
+	if(high==0) {
+		highItr = head;
+		highNext = head->next;
+		return head;
+	}
+	Node *nxtNode = reverseList(head->next, high-1, highItr, highNext);
+	nxtNode->next = head;
+	return head;
+}
+Node *reverseLL(Node *head, int low, int high) {
+	if(!head || !head->next || low == high) return head;
+	Node *lowItr = nullptr, *lowPrev = nullptr, *itr = head;
+	high -= low;
+	while(itr && low-->1){
+		lowPrev = itr;
+		itr = itr->next;
+	}
+	lowItr = itr;
+	Node *highItr = nullptr, *highNext = nullptr;
+	reverseList(lowItr,high,highItr,highNext);
+	if(lowPrev) lowPrev->next = highItr;
+	else head = highItr;
+	lowItr->next = highNext;
+	return head;
+}
+
+//T.C. : O(N)
+//S.C. : O(N)
