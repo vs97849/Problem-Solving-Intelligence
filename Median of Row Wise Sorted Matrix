@@ -1,0 +1,58 @@
+/*******************************************
+   Given a matrix of integers A of size N x M in which each row is sorted.
+   Find and return the overall median of matrix A.
+   
+Sample Input 1 :
+1
+3 3 
+1 3 5
+2 6 9
+3 6 9
+Sample Output 1 :
+5
+Explanation For Sample Input 1 :
+On sorting the input matrix
+1 2 3 3 5 6 6 9 9
+The median of the above sorted array is its middle value and that is 5.
+Sample Input 2 :
+2
+1 1 
+5
+1 3
+1 4 6
+Sample Output 2 :
+5
+4
+*******************************************/
+
+Approach 1:
+    collect all elements of matrix into a linear array.
+    sort that. and return mid element. (as in median)  T.C. : O( (n*m) * log2(n*m) )
+                                                       S.C. : O( n*m ) 
+  
+Approach 2:
+    as Median will be middle if sorted and position of it will be in (n*m)/2 .
+    If we have the median, then we can validate by it's position or how many elements must occur before it in a sorted representation.
+    So to fix element we can use Binary Approach on hunting/fixing the median val. and to find the number of elements before it (ct), use
+    another binary search or upper_bound, to get the position 1 higher element. which is the count of element in current row which are either 
+    less than or equal to huting number. repeat the same in each row. (to get the total count in whole matrix).
+    if the ct is less than equal to (n*M)/2, than proceed as binary huting (low = mid+1) else (high = mid-1)
+    
+#include <bits/stdc++.h> 
+int findMedian(vector<vector<int>>&arr, int n, int m){
+	int low = -1000000000, high = 1000000000;
+	int halfN = (n*m)/2;
+	while(low<=high){
+		int mid = (low+high)/2;
+		int ct = 0;
+		for(int i=0;i<n;++i){
+			ct += upper_bound(arr[i].begin(), arr[i].end(), mid) - arr[i].begin();
+		}
+		if(ct<=halfN) low = mid+1;
+		else high = mid-1;
+	}
+	return low;
+}
+    
+  
+    
