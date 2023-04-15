@@ -1,0 +1,50 @@
+/* given array of heights of balloons, find minimum number of arrows required to burst all balloons.
+   player fires the arrow from left to right, choosing a height(h) for an array. If moving arrow gets ballon, balloon will burst. And,
+   arrow will continue to move at height (h-1).
+   
+Sample Input 1:
+5
+2 1 5 4 3
+Sample Output 1:
+2
+Explanation Of The Sample Input1:
+We need to shoot the arrow at height 5 - which destroys balloons at the height [5, 4, 3], and shoots an arrow at height 2 - which destroys [2, 1].  
+Therefore we require a minimum of 2 arrows.
+Sample Input 2:
+3
+3 2 1
+Sample Output 2:
+1
+Explanation Of The Sample Input 2:
+We need to shoot the arrow at height 3 - which destroys balloons at the height [3,2,1]. Therefore we need to shoot only 1 arrow.
+*/
+   
+Approach: 
+    So, if we cover a sequence of height values starting at height h and continue catching h-1 progressively. Then number of such different sequence will
+    be the answer. These heights can be discontinues, so we need to store the heights in a container. As to maintain different subsequences.
+    As the repetetive heights can be present, so we can keep count of them, as to make them available for different descendent first met.
+    Getting h+1 in container means arrow previously hit (or was ) at h+1. Else increment count, as this is the part of new subsequence/family. 
+    Which means for this line, new Arrow must be required.
+    
+#include <bits/stdc++.h> 
+int burstingBalloons(int *arr, int n)
+{
+    if(n<2) return n;
+   int ans = 0;
+   unordered_map<int,int>hash;
+   for(int i=0;i<n;++i){
+       int h = arr[i];
+       if(hash.find(h+1)==hash.end()){
+           ++ans;
+       }
+       else{
+           if(hash[h+1]>0) --hash[h+1];
+           else ++ans;
+       }
+       ++hash[h];
+   }
+   return ans;
+}
+
+//T.C. : O(N)
+//S.C. : O(N)
