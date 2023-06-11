@@ -1,0 +1,70 @@
+/*
+Given an array ‘PRICES’ which denotes stock prices for ‘N’ days, e.g., PRICES[ i ] = price of the stock at ‘ith’ day, find the stock's span for each day.
+
+The span of the stock's price today is defined as the maximum number of consecutive days(starting from today and going backward) 
+for which the price of the stock was less than today's price.
+
+Example:
+Input: ‘N’ = 7,  ‘PRICES’ = [100, 80, 60, 70, 60, 75, 85]
+
+Output: [1, 1, 1, 2, 1, 4, 6]
+
+On the sixth day, when the stock price was 75, the span came out to be 4 because the last three prices(plus today) were less than the current or the sixth day's price. 
+Similarly, we can deduce the remaining results.
+
+Sample Input 1 :
+2
+3
+1 1 1
+5
+4 2 3 3 6
+Sample Output 1 :
+1 2 3
+1 1 2 3 5
+Explanation Of Sample Input 1 :
+In the first test case, the price of Ninja Coin is the same for all three consecutive days, so its span at ith day will be the number of days till ‘i’.
+
+For the second test case, refer to the problem statement for an explanation.
+Sample Input 2 :
+2
+7
+100 80 60 70 60 75 85
+5
+5 4 3 2 1
+Sample Output 2 :
+1 1 1 2 1 4 6
+1 1 1 1 1
+*/
+
+Approach 1:
+    for each day, traverse backward while comparing those values with current day price, and update count and add to answer. T.C.: O(N^2). S.C. : O(1)
+ 
+Approach 2:
+    save already calculated spans on extra data structure and resuse those.
+    while traversing while on an ith day, traverse/lookup on to collected stack till either the stack is empty or the top extracted element is lesser or equal
+    to current price. During this, add the collected span values to span variable. and pop them.
+    On first day, stack would be empty, initialize the span variable with 1 (span = 1). hence {price[i],1} will be added to stack and 1 will be pushed to ans vector.
+    on some day, if on jth stack's top value is higher than current price val, then span is over, break inner loop and add to span to ans and push {prices[i], span}
+    to stack.
+    else if stack's top value is lower or equal, then span continues and top value will be popped from stack, as adding current calculated span, hence not needing any
+    redundant entries in stack.
+    
+#include <bits/stdc++.h>
+vector<int> findSpans(vector<int> &price) {  
+    stack< pair<int,int> >stk;
+    int n = price.size();
+    vector<int>ans(n);
+    for(int i=0;i<n;++i){
+        int span = 1;
+        while(!stk.empty() && stk.top().first <= price[i]){
+            span += stk.top().second;
+            stk.pop();
+        }
+        ans[i] = span;
+        stk.push({price[i], span});
+    }
+    return ans;
+}
+
+// T.C. : O(N)
+// S.C. : O(N)
