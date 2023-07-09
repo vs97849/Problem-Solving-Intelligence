@@ -1,0 +1,71 @@
+Sample Input 1:.
+2
+4 4
+0 1
+1 2
+2 3
+3 0
+3 3
+1 0
+1 2
+0 2
+Sample Output 1:
+true
+false
+Explanation For Sample Input 1:
+In the first case,
+From node 0 we can reach 0 again by following this sequence of nodes in the path: 0,1,2,3,0. As we can see in the image below.
+
+In the second case,
+There is no cycle in the given graph. As we can see in the image below.
+
+Sample Input 2:
+2
+3 2
+0 1
+0 2
+3 3
+1 1
+0 2
+1 2
+Sample Output 2:
+false
+true
+
+Approach: 
+    in case of undirected Graph, we could have used a visited data structure and done DFS, on going if visited nodes comes again and not a parent node,
+    then cycle exists.
+
+    But this won't work in case of directed Graph. As 1->2->3 , 3 is visited but from other node 3 could have been visited from other node too, which doesn't ensure
+    the cyclicity. 
+    So Cycle could be identified when while going forward, a node is visited again so return true else while return the call stack we would falsify the visited staus.
+
+    Can use the single data structure for visit or double data structure too (one for going forward dfs and another for visited all over node).
+
+    starter node can be multiple hence DFS traversal have to be started from every node. or from node which have indegree 0.
+
+#include<queue>
+#include<unordered_map>
+bool dfs(vector<int>adj[], int u, unordered_map<int,bool>&vis){
+	if(vis[u]) return true;
+	vis[u] = true;
+	for(int v: adj[u]) if(dfs(adj, v, vis)) return true;
+  vis[u] = false;
+	return false;
+}
+bool isCyclic(vector<vector<int>>& edges, int v, int e)
+{
+	vector<int>adj[v];
+	for(vector<int>&edge : edges){
+		adj[edge[0]].push_back(edge[1]);
+	}
+	unordered_map<int,bool>vis;
+	for(int i=0;i<v;++i){
+		if(!vis[i] && dfs(adj, i, vis)) return true;
+	}
+	return false;
+}
+
+// T.C. : O(V+E)
+// S.C. : O(V+E)
+
