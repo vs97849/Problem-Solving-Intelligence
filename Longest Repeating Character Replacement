@@ -1,0 +1,85 @@
+/*
+You are given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. 
+You can perform this operation at most k times.
+
+Return the length of the longest substring containing the same letter you can get after performing the above operations.
+
+Example 1:
+
+Input: s = "ABAB", k = 2
+Output: 4
+Explanation: Replace the two 'A's with two 'B's or vice versa.
+Example 2:
+
+Input: s = "AABABBA", k = 1
+Output: 4
+Explanation: Replace the one 'A' in the middle with 'B' and form "AABBBBA".
+The substring "BBBB" has the longest repeating letters, which is 4.
+There may exists other ways to achive this answer too.
+ 
+Constraints:
+
+1 <= s.length <= 105
+s consists of only uppercase English letters.
+0 <= k <= s.length
+*/
+
+Approach 1:
+    sliding Window: As max length have to be achived in limited K replacements, So focusing on majority charactor is the way.
+    if in a window of length l, we have cf as the max frequency, then l - cf must be less than or equal to k.
+    Violating that would be stopping criteria for window length expansion and now window length decrement is needed. while doing that frequency hash/table
+    will need to be updated. while looping will maintain a ans var to have maximized window length.
+
+   int characterReplacement(string &s, int k) {
+        int a[26] = {0};
+        int l = 0, ans = 0, maxFreq = 0;
+        for(int r=0;r<s.length();++r){
+            int freq = ++a[s[r]-'A'];
+            auto maxFreqLam = [&a]() -> int {
+                int ct = 0;
+                for(int i=0;i<26;++i) ct = max(ct, a[i]);
+                return ct;
+            };
+            maxFreq = max(maxFreq, freq);
+            while(r-l+1 - maxFreq > k){
+                --a[s[l++]-'A'];
+                maxFreq = maxFreqLam();
+            }
+            ans = max(ans, r-l+1);
+        }
+        return ans;
+
+//T.C. : O(26*N)
+//S.C. : O(26)
+
+Approach 2:
+    Sliding + technical trickyness.
+    As window length have to be maximized under K replacement restrictions. If we try to cut out the operation of calculating/getting max freq from table.
+    Then can be done in O(N) instead of O(26.N). 
+    Because our expression to be controlled and wl = (r-l+1) to be maximized  via : r - l + 1 - maxFreq <= k. then then ignore if maxFreq decreases, so no 
+    need to check in table for getting correct maxFreq. Only when on adding current charactor to table, and if maxFreq can be increased then directly update.
+    Bcs at first time, we did only increased and had correct maxFreq count. and we allowed the window expansion till r-l+1 - maxFreq <= k. so if maxFreq is same
+    then till the allowed limit window length would be same.
+    And if it is increased then definitely it's a valid one.
+
+    int characterReplacement(string &s, int k) {
+        int a[26] = {0};
+        int l = 0, r = 0, maxFreq = 0;
+        for(int r=0;r<s.length();++r){
+            maxFreq = max(maxFreq, ++a[s[r]-'A']);
+            if(r-l+1 - maxFreq > k){
+                --a[s[l++]-'A'];
+            }
+        }
+        return s.length() - l;
+    }
+};
+//k = 2
+// abacbbcb
+// 0, 2, 2,  
+// max 3
+// beg 3
+// end 8
+
+// T.C. : O(N)
+// S.C. : O(26)
