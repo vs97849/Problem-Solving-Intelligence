@@ -1,0 +1,53 @@
+/*
+  You are given the head of a singly linked-list. The list can be represented as:
+  
+  L0 → L1 → … → Ln - 1 → Ln
+  Reorder the list to be on the following form:
+  
+  L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+  You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+  
+  Example 1:
+    Input: head = [1,2,3,4]
+    Output: [1,4,2,3]
+
+  Example 2:
+    Input: head = [1,2,3,4,5]
+    Output: [1,5,2,4,3] 
+*/
+
+Approach:
+    Without requiring new nodes or fresh list generation
+    Trying rearranging the list. As pattern is to connect 1st to last , and last to next of first, and so on ....
+    Trying to save extra iteration or container. So using recursion , so challenge is : access of both the nodes left most and right most at the same time.
+    So to get the last nodes linearly, can use the recursion stack's unwinding. and keep the first node/left nodes as reference so will maintain at each recursion level(means will be same at each
+    recursion calls. then joining can happen.
+    stopping criteria should be when both ends meet, and we have to return, else wrong linking could happen(disturb the already attached joins)
+                                                                                                                                                                         
+
+#include <bits/stdc++.h> 
+void help(Node<int>*cur, Node<int>*&left, bool &flag){
+    if(!cur) return;
+    help(cur->next, left, flag); //forward movement on list
+    if(flag) return;
+    // list length can be odd and even, so left & right meet is being checked, if met no further processing is required, during stack unwinding
+    if(cur == left || cur == left->next) {
+        cur->next = nullptr;
+        flag = true;
+        return ;
+    }
+    Node<int>*leftNext = left->next;
+    left->next = cur;
+    cur->next = leftNext;
+    left = leftNext;
+}
+Node<int>* rearrangeList(Node<int>* head)
+{
+    Node<int>*left = head;
+    bool flag = false;  //when true then left and right met
+    help(head, left, flag);
+    return head;
+}
+
+// T.C. :  O(N)
+// S.C. :  O(N) (recursion stack, else O(1))
