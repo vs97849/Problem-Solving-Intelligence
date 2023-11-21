@@ -1,0 +1,62 @@
+/*
+    given an array, try to divide elements in exclusive sets, such that those sequences are strictly decreasing and number of those sequences is minimum
+
+    Sample Input 1:>
+    2
+    4
+    4 2 1 3
+    5
+    2 3 4 5 1
+    Sample Output 1:>
+    2
+    4
+    Explanation of sample input 1:>
+    For the first test case,
+    The subsequences can be [4,2,1] , [3] or [4,3] ,[2,1].
+     Hence the minimum number of subsequences is 2.
+    
+    For the second test case, the possible subsets are:
+     The subsequences can be [2] , [3] , [4] , [5,1].
+     Hence the minimum number of subsequences is 4. 
+    Sample Input 2:>
+    2
+    2 
+    2 1 
+    4 
+    3 2 1 4
+    Sample Output 2:>
+    1
+    2
+*/
+
+Approach 1 :  will check for each element as starting of a new sequence, if it was added before, then don't proceed, else this will be start of our new required subsequence.
+              will use hashes for achieving this. will increment our ans when new candidate is found. in worst case required double iteration. O(N^2) and S.C. : O(N)
+
+
+Approach 2 :  will use smarter effience version of above.
+              will let each element come and check for when it can fit in available sequence. if yes then current one would be lesser, hence will be newer for next upcoming to be checked.
+              else will be added to container.
+              will try to best fit in the maintained container, as would fit current element into sequence which is bigger than current and minimum of all such element.
+              hence this way have populate sequence container, so that will be in sorted order, doing upper bound will efficent and will find minimum of bigger element possible else end of the container.
+
+
+#include <algorithm>
+
+int decreasingSubsequences(int n, vector<int> &arr)
+{
+    vector<int> sequences;
+    for(const int & x : arr){
+        int bestFitLastIdx = upper_bound( sequences.begin(), sequences.end(), x ) - sequences.begin();
+        if(bestFitLastIdx < sequences.size()) {
+            sequences[ bestFitLastIdx ] = x;
+        }
+        else {
+            sequences.push_back( x );
+        }
+    }
+    return sequences.size();
+}
+
+
+// T.C. : O ( N * Log N )
+// S.C. : O ( N )
