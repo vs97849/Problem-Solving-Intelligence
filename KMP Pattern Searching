@@ -1,0 +1,99 @@
+/*  given a text and a pattern. Assuming pattern to be smaller in length than text. Find all the occurences of the pattern in text.
+
+Problem statement
+You are given a string ‘text’ and a string ‘pattern’, your task is to find all occurrences of pattern in the string ‘text’ and return an array of indexes of all those occurrences. 
+You may assume that the length of ‘text’ is always greater than the length of ‘pattern’.
+
+For example :
+Let text = “this is a good place to have a good start”, pattern = “good” so you have to return {10, 31} because at 10 and 31 index pattern is present in the text.
+Note :
+If there is no such index in the text then just return an array containing -1.
+
+Sample Input 1 :
+2
+XYXXXYZW
+XYZ
+ABAAAABAACD
+ABA
+Sample Output 1 :
+4
+0 5   
+Explanation For Sample Input 1 :
+For the first test case:
+The given text is  “XYXXXYZW” and we have to find the pattern “XYZ” as we can clearly see that this pattern only exists once in the text at index 4 to index 6 
+so we will return an array containing just a single element that is 4. 
+
+For the second test case:
+The given text is  “ABAAAABAACD” and we have to find the pattern “ABA” as we can clearly see that this pattern exists at two places in the given text 
+that is from index 0 to 2 and from index 5 to 7, so clearly we will return both the starting indices where the pattern is found therefore we will return 0 and 5.
+Sample Input 2 :
+3
+DDDVVVBHHUT
+HUT
+SSYTPQSSYGVBFSSY
+SSY
+PABCDABCDABCD
+ABCDE    
+Sample Output 2 :
+8
+0 6 13
+-1
+
+*/
+
+
+Approach 1 : 
+      Brute Force : start from beginning of both the strings (text, pattern), if chars match, then move forward in both, if pattern is consumed means we got the match, add the start index of this 
+      matched substring in text to the ans. and start from next for other possible findings.
+      Time : O(N * M)  Space : O(1)
+
+Approach 2 : 
+      KMP : as in case of mismatch of any character, we have to again start from previous start index + 1, for each possiblility. what if we know in advance that going back in text isn't necessary.
+            To achieve this, we can preprocess the pattern , and collect the information that where the substring (of pattern) was occured before as prefix (or from the start of the pattern), using
+            this , in case of mismatch of an arbitrary pos of text and on pattern, we didn't even need to jump to start of the pattern. We could jump till which max contiguous length did this 
+            current matched substring might have repeated as prefix. And we can continue. if no repeat then only pattern has to start again , and text will start from next.
+            And if matches, we could proceed on both.
+
+
+#include <bits/stdc++.h> 
+void lps( string &pattern, int pL, vector< int > & dp ) {
+    for(int i=0, j=1; j < pL ; ++j) {
+        if(pattern[i] == pattern[j]) {
+            dp[j++] = ++i;
+        }
+        else {
+            if(i==0) dp[j++] = 0;
+            else i = dp[i-1];
+        }
+    }
+}
+
+void kmp( string & text, string & pattern, vector< int > & ans ) {
+    int tL = text.length(), pL = pattern.length();
+    vector< int > dp ( pL, 0 );
+    lps(pattern, pL, dp);
+    for( int i=0,j=0; i<tL ; ) {
+        if(text[i] == pattern[j]) {
+            ++i; ++j;
+        }
+        else {
+            if(j == 0) ++i;
+            else j = dp[j-1];
+        }
+        if(j>=pL) {
+            ans.push_back(i-j);
+            i = i-j+1;
+            j=0;
+        }
+    }
+    if(ans.empty()) ans = {-1};
+}
+
+vector<int> patternSearch(string & text, string & pattern) {
+    vector< int > ans ;
+    kmp( text, pattern, ans );
+    return ans;
+}
+
+// T.C. : O( N + M )
+// S.C. : O( M )
