@@ -1,0 +1,50 @@
+/*
+Problem statement
+You have been given a binary tree with an integer value associated to each node. 
+You are supposed to choose a subset of these nodes such that the sum of these chosen nodes is maximum. Keep in mind that no two of the chosen nodes must be adjacent to each other.
+
+Note :
+Two nodes are said to be adjacent to each other if they are directly connected to each other. 
+This means that if a node is taken as part of the sum, then none of its children can be considered for the same and vice versa.
+
+Sample Input 1 :
+1
+1 2 3 1 -1 4 5 -1 -1 -1 -1 -1 -1
+Sample Output 1 :
+11
+
+Sample Input 2 :
+2
+1 2 3 -1 -1 -1 -1
+7 -1 -1
+Sample Output 2 :
+5
+7 
+*/
+
+Approach 1 :
+      recursion : at an arbitrary node, 2 different sets we can find and return max of the possible to it's parent.
+                  1. include current node, that means we cann't take direct child, but yes grand child will definetely gonna add.
+                  2. exclude current node, that means , whatever child collected best will be returned. as on recursion, child already have been calculated, so max of their include or exclude can
+                     be returned.
+                  hence need both the information at current function call stack, 1. sum with included current node  2.  without current node
+
+pair<int,int> solve(TreeNode<int>* root) {
+    if(!root) return {0,0};
+    auto left = solve(root->left);
+    auto right = solve(root->right);
+    return { root->data + left.second + right.second, 
+              max(left.first, left.second) + max(right.first, right.second) } ;
+}
+
+int maximumSumOfNodes(TreeNode<int> *root)
+{
+     pair<int,int> ans=solve(root);
+     return max(ans.first,ans.second);
+}
+
+
+// T.C. : O(N)
+// S.C. : O(N) (for stack)
+
+
