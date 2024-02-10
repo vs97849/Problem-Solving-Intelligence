@@ -1,0 +1,77 @@
+/* Maximum Of All Subarrays Of Size k.
+Problem statement
+You are given an array consisting of N non-negative integers, and an integer K denoting the length of a subarray, your task is to determine the maximum elements for each subarray of size K.
+
+Note:
+A subarray is a contiguous subset of an array.
+
+The array may contain duplicate elements.
+
+The given array follows 0-based indexing.
+
+It is guaranteed that there exists at least one subarray of size K.
+
+Sample Input 1:
+1
+4 2
+10 7 8 11
+Sample Output 1:
+10 8 11
+Explanation For Sample Input 1:
+The first subarray of length 2 is [10,7] and the maximum of it is 10, then the next subarray of length 2 is [7,8] and the maximum of it is 8, and the last subarray of size 2 is [8,11] and the maximum of it is 11, So the output is [10,8,11].
+Sample Input 2:
+1
+4 3 
+11 3 9 6
+Sample Output 2:
+11 9
+
+*/
+
+Approach 1 :
+      Using Priority queue: As we move in the array, we need to collect only the max val in current K sized window.
+      If we maintain a max-heap, then we can return max value quickly in O(1), but another challenge would be to release old values which no longer belongs to the current window.
+      So maintain a k sized max heap. Add new coming element to queue with it's index, now to maintain heap size till k , till top element deserved to be removed by checking if it's index
+      is older than i-k. So top element will be the ans.
+
+#include <bits/stdc++.h> 
+vector<int> maxOfSubarray(vector<int> nums, int n, int k) 
+{
+	vector<int> ans;
+	priority_queue< pair<int,int> > pq;
+	for(int i=0;i<k;++i) pq.push({nums[i], i});
+	ans.push_back(pq.top().first);
+	for(int i=k;i<n;++i) {
+		pq.push({nums[i], i});
+		while(pq.top().second <= i-k) {
+			pq.pop();
+		}
+		ans.push_back(pq.top().first);
+	}
+	return ans;
+}
+
+// T. C. : O(N*LogK)
+// S.C. :  O(K)
+
+
+Approach 2 :
+      Using a multiset:  maintain set of K size. max / required number will be first of the container. Further challenge would be to release the older element.
+      Hence add new element to the multiset. Erase the element which is < i-k. By searching input[i-k] in multiset, and erase it. So whatever the first element in resulting multiset,
+      collect that.
+
+#include <bits/stdc++.h> 
+vector<int> maxOfSubarray(vector<int> nums, int n, int k) 
+{
+	vector<int> ans;
+	multiset<int, greater<int>>mst;
+	for(int i=0;i<k;++i) mst.insert(nums[i]);
+	ans.push_back(*mst.begin());
+	for(int i=k;i<n;++i) {
+		mst.insert(nums[i]);
+		auto itr = mst.find(nums[i-k]);
+		mst.erase(itr);
+		ans.push_back(*mst.begin());
+	}
+	return ans;
+}
