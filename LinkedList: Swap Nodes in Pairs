@@ -1,0 +1,42 @@
+/*
+Given a linked list, swap every two adjacent nodes and return its head. You must solve the problem without modifying the values in the list's nodes (i.e., only nodes themselves may be changed.)
+
+Example 1:
+Input: head = [1,2,3,4]
+Output: [2,1,4,3]
+
+Example 2:
+Input: head = []
+Output: []
+
+Example 3:
+Input: head = [1]
+Output: [1]
+*/
+
+Approach : 
+      Recursion :
+        if we destribute the swapping of nodes to different workers and combine/link them, then problem is solved.
+        That's perfect for recursion. base cases when list is empty or contain only 1 node, then it's simply already solved. just return head ;
+        else, we would recurse and call the subsequent right node, which is not next to the current node, but next to next. Because after swapping adjacent, means current and next
+        node. Next target must be in next segment which is next to next node .
+        so our next node would be linked to current node and current node have to point to result got from next recursion call / worker.
+
+class Solution {
+public:
+
+    ListNode* swapPairs(ListNode* head) {
+        if( nullptr == head || nullptr == head->next ) return head ;
+
+        ListNode * retNode = swapPairs( head->next->next ) ;
+
+        ListNode * head_next = head->next ;
+        head_next->next = head ;
+        head->next = retNode ;
+
+        return head_next ;
+    }
+};
+
+T.C.: O(N)
+S.C. : O(N) (including the stack , used in recursion ) 
