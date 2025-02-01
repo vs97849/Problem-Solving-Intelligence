@@ -1,0 +1,53 @@
+Given a binary array nums, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
+
+/*
+Example 1:
+
+Input: nums = [0,1]
+Output: 2
+Explanation: [0, 1] is the longest contiguous subarray with an equal number of 0 and 1.
+Example 2:
+
+Input: nums = [0,1,0]
+Output: 2
+Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+nums[i] is either 0 or 1.
+*/
+
+
+Approach:
+    it's similar to finding longest contiguous sub-array having a target sum.
+    Here target could be kept as 0, as we are trying to keep the window as balance/equal of different symbol.
+    we can add 1 as it and -1 when we get 0.
+    In case of 0 as a target, if the current sum has already occurred in the hashMap, then window between that index and current index is having sum 0
+    Remember to keep 0 in the hashmap record before starting scan, as we could get 0. Which means from start till current index all given sum zero.
+    which means till now it's balanced.
+
+Code :
+
+class Solution {
+public:
+    int findMaxLength(vector<int>& nums) {
+        unordered_map< int, int > hashMaps ;
+        hashMaps[0] = -1 ;
+        int ans = 0, sum = 0;
+        for( int i=0;i<nums.size();++i ) {
+            sum += 1 == nums[i] ? 1 : -1 ;
+            auto itr = hashMaps.find( sum ) ;
+            if( itr != hashMaps.end() ) {
+                ans = max( ans, i - itr->second ) ;
+            }
+            else hashMaps[sum] = i ;
+        }
+        return ans ;
+    }
+};
+
+
+// T.C. : O(N)
+// S.C. : O(N) 
