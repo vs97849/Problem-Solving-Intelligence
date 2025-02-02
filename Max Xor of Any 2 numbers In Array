@@ -1,0 +1,98 @@
+/*
+Maximum XOR of Two Numbers in an Array
+
+Given an integer array nums, return the maximum result of nums[i] XOR nums[j], where 0 <= i <= j < n. 
+
+Example 1:
+
+Input: nums = [3,10,5,25,2,8]
+Output: 28
+Explanation: The maximum result is 5 XOR 25 = 28.
+Example 2:
+
+Input: nums = [14,70,53,83,49,91,36,80,92,51,66,70]
+Output: 127
+
+Constraints:
+
+1 <= nums.length <= 2 * 105
+0 <= nums[i] <= 231 - 1
+*/
+
+
+Approach :
+    brute force :
+        iterate for every 2 numbers in array, record and maintain the maximum xor values .
+        Time complexity would be : O(N^2) 
+        S.C. : O(1)
+
+
+    Optimized :
+        xor is max at different values at a bit position.
+        As the input array is of integer elements, that means of fixed bit width ( 32 bits ) .
+        If we had the records of bit-values at every bit position of any elements in array. Then choosing/finding a number which have max xor relative to
+        any other numbers in the array.
+        Because all the bit-values for all bit positions are captured.
+        We we record every combination in different entity, then it could go exponentially.
+        But we can see, every bit position have 2 possible values ( 0 or 1 ) . And importantly, they are overlapping.
+        Then we could use trie data structure, which means every node could have only 2 childrens, irrespective of any number of numbers.
+        And depth of the trie would be 32.
+        Hence , after building trie, which would take : O( N  * 32 ) or O ( N * log(max_element) ).
+        As purpose is to get max xor value. Start from MSB, having different bit at MSB, will give max xor value.
+        going in that way,  xor calculated would be highest.
+        Key part is , anyone can wonder , if we chose a path, means chose/preferred a number greedily, then later other number could give different bit-values
+        situations , increasing the xor value.
+        point to be noted is, we are starting from MSB, even a single required different bit, would lead to highest increase in xor, than any of the following
+        bit-values at any bit positions.
+
+Code:
+
+struct TrieNode {
+    TrieNode * children[2] ;
+    TrieNode() {
+        children[0] = children[1] = nullptr ;
+    }
+} ;
+
+class Solution {
+    TrieNode * root {nullptr};
+public:
+    void insertIntoTrie( const int & x ) {
+        bitset< 32 > bs( x ) ;
+        TrieNode * ptr = root ;
+        for(int i=31;i>=0;--i) {
+            if( nullptr == ptr->children[ bs[i] ] ) {
+                ptr->children[ bs[i] ] = new TrieNode() ;
+            }
+            ptr = ptr->children[ bs[i] ] ;
+        }
+    }
+    int getMaxXor( const int & x ) {
+        int max_xor = 0 ;
+        TrieNode * ptr = root ;
+        for(int i=31;i>=0;--i) {
+            bool x_bit = x & (1<<i) ;
+            if( nullptr != ptr->children[ ! x_bit ] ) {
+                max_xor |= 1<<i ;
+                ptr = ptr->children[ ! x_bit ] ;
+            }
+            else ptr = ptr->children[ x_bit ] ;
+        }
+        return max_xor ;
+    }
+    int findMaximumXOR(vector<int>& nums) {
+        root = new TrieNode() ;
+        for( const int & x : nums ) {
+            insertIntoTrie( x ) ;
+        }
+        int ans = 0 ;
+        for( const int & x : nums ) {
+            ans = max( ans, getMaxXor( x ) ) ;
+        }
+        return ans ;
+    }
+};
+
+// T.C. : O( N * log( max(Ai) ) )
+// S.C. : O( N * 32 ) 
+        
