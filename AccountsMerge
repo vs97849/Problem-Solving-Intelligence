@@ -1,0 +1,215 @@
+/* 
+Accounts Merge
+Solved
+Medium
+Topics
+premium lock icon
+Companies
+Hint
+Given a list of accounts where each element accounts[i] is a list of strings, where the first element accounts[i][0] is a name, and the rest of the elements are emails representing emails of the account.
+
+Now, we would like to merge these accounts. Two accounts definitely belong to the same person if there is some common email to both accounts. Note that even if two accounts have the same name, 
+they may belong to different people as people could have the same name. A person can have any number of accounts initially, but all of their accounts definitely have the same name.
+
+After merging the accounts, return the accounts in the following format: the first element of each account is the name, and the rest of the elements are emails in sorted order. 
+The accounts themselves can be returned in any order.
+
+ 
+
+Example 1:
+
+Input: accounts = [["John","johnsmith@mail.com","john_newyork@mail.com"],["John","johnsmith@mail.com","john00@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+Output: [["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],["Mary","mary@mail.com"],["John","johnnybravo@mail.com"]]
+Explanation:
+The first and second John's are the same person as they have the common email "johnsmith@mail.com".
+The third John and Mary are different people as none of their email addresses are used by other accounts.
+We could return these lists in any order, for example the answer [['Mary', 'mary@mail.com'], ['John', 'johnnybravo@mail.com'], 
+['John', 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com']] would still be accepted.
+
+
+Example 2:
+
+Input: accounts = [["Gabe","Gabe0@m.co","Gabe3@m.co","Gabe1@m.co"],["Kevin","Kevin3@m.co","Kevin5@m.co","Kevin0@m.co"],["Ethan","Ethan5@m.co","Ethan4@m.co","Ethan0@m.co"],
+                  ["Hanzo","Hanzo3@m.co","Hanzo1@m.co","Hanzo0@m.co"],["Fern","Fern5@m.co","Fern1@m.co","Fern0@m.co"]]
+Output: [["Ethan","Ethan0@m.co","Ethan4@m.co","Ethan5@m.co"],["Gabe","Gabe0@m.co","Gabe1@m.co","Gabe3@m.co"],["Hanzo","Hanzo0@m.co","Hanzo1@m.co","Hanzo3@m.co"],
+        ["Kevin","Kevin0@m.co","Kevin3@m.co","Kevin5@m.co"],["Fern","Fern0@m.co","Fern1@m.co","Fern5@m.co"]]
+ 
+
+Constraints:
+
+1 <= accounts.length <= 1000
+2 <= accounts[i].length <= 10
+1 <= accounts[i][j].length <= 30
+accounts[i][0] consists of English letters.
+accounts[i][j] (for j > 0) is a valid email.
+
+*/
+
+
+requirements understanding summary and keypoints :
+
+1. same named people can have different email, so do not try to merge by name. Hence focus would be on emails only as based on the problem emails would be unique
+2. And a single person can have multiple emails.
+3. 2 accounts would be of same person or belong to same set/group iff they share atleast single email.
+
+
+Intuition / approach :
+
+        based on keypoints, seems like it would form multiple sets of accounts and they need to be merged based on any common node / email 
+        based on above assertion: can think of 2 known patterns:
+        1. D.S.U. disjoint union sets. 
+        2. DFS or graph traversal
+
+        1. DSU:
+
+            - union: while traversing the input lists, the given email could be new, in that case that will be added in for rank and parent containers, here hash could be used for string or
+                     int vector could be used playing with indices of the email. ( what ? it means another single hash could be used to store email -> index , bcs if it's repeated we wont update the 
+                     hash and in that case union would be called. It will make further Union and find algorithms simple. rank vector would be updated in union. Where smaller parent tree would
+                      be connected to bigger one. smaller and bigger would be decided based on ranks
+
+            - find: similarily parent vector<int> could be used while playing with indices
+
+        2. DFS:
+
+            - simply, problem is merging different graph components.
+              so adjacency list would be created again based on emails only.
+              key would be an email and all neighbors would be whatever in the input given a single account vector for each email as the edge would be bidirectional.
+              In case any common node, dfs would be able to merge that in a single list or will make it part of the same group and based on the visited hash, repeation would be prevented
+
+
+Code 
+
+    1. DSU:
+
+class DSU{
+    private:
+    vector<int>par,rank;
+    public:
+    DSU(int n){
+        par.resize(n+1);
+        rank.resize(n+1,0);
+        for(int i =0;i<n+1;i++)par[i]=i;
+    }
+    int Parent(int x){
+        if(x==par[x])return x;
+        // path compression
+        return par[x]=Parent(par[x]);
+    }
+    void Union(int x,int y){
+        int upx = Parent(x);
+        int upy = Parent(y);
+        if(upx==upy)return;
+        int rx = rank[upx];
+        int ry = rank[upy];
+        if(rx==ry){
+            par[upx]=upy;
+            rank[upy]++;
+        }
+        else if(rx>ry){
+            par[upy]=upx;
+        }
+        else{
+            par[upx]=upy;
+        }
+    }
+};
+class Solution {
+public:
+    vector<vector<string>> accountsMerge(vector<vector<string>>& a) {
+        int n = a.size();
+        DSU obj(n);
+        unordered_map<string,int>umap;
+        for(int i =0;i<n;i++){
+            for(int j = 1;j<a[i].size();j++){
+                auto it = umap.find(a[i][j]);
+                if(it!=umap.end()){
+                    // already there
+                    obj.Union(i,it->second);
+                }
+                else{
+                    umap[a[i][j]]=i;
+                }
+            }
+        }
+        int countCom = 0;
+        unordered_map<int,int>umap_index_map; int idx = 0;
+        for(int i =0;i<n;i++){
+           
+            if(obj.Parent(i)==i){umap_index_map[i]=idx;idx++;countCom++;}
+        }
+        vector<vector<string>>ans(countCom);
+         for(int i =0;i<n;i++){
+            int idx = umap_index_map[obj.Parent(i)];
+            if(ans[idx].size()==0){
+                ans[idx].push_back(a[i][0]);
+            }
+            for(int j = 1;j<a[i].size();j++){
+                auto it = umap.find(a[i][j]);
+                if(it!=umap.end()){
+                    umap.erase(a[i][j]);
+                    ans[idx].push_back(a[i][j]);}
+            }
+        }
+        for(int i = 0;i<countCom;i++){
+            sort(ans[i].begin()+1,ans[i].end());
+        }
+        // for(auto x:umap_index_map)cout<<x.first<<' '<<x.second<<endl;
+        return ans;
+    }
+};
+
+Time complexity:
+O((α) * 2 * M)+O(N * Log(N))
+
+Space complexity:
+O(M)
+
+
+2. DFS
+
+class Solution {
+    unordered_map<string, list<string>> adj ;
+    unordered_set<string> vis ;
+public:
+    void dfs( const string & email, vector<string> & mergedEmails ) {
+        vis.insert( email ) ;
+        mergedEmails.push_back( email ) ;
+        for( const string & neighborEmail : adj[email] ) {
+            if( ! vis.contains( neighborEmail ) ) {
+                dfs( neighborEmail, mergedEmails ) ;
+            }
+        }
+    }
+
+    vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
+        for( auto & acct : accounts ) {
+            for( int i=1; i<acct.size()-1; ++i ) {
+                adj[ acct[i] ].push_back( acct[i+1] ) ;
+                adj[ acct[i+1] ].push_back( acct[i] ) ;
+            }
+        }
+
+        vector<vector<string>> ans ;
+
+        for( auto & acct : accounts ) {
+            if( ! vis.contains( acct[1] ) ) {
+                ans.reserve( accounts.size() ) ;
+                ans.push_back( {acct[0]} ) ;  // adding name first
+                dfs( acct[1], ans.back() ) ;  // starting dfs with first email or node 
+                sort( ans.back().begin() + 1, ans.back().end() ) ;
+            }
+        }
+        return ans ;
+    }
+};
+
+// 1 2 3 4
+// 5 6 7 8
+// 2 7 8
+
+// after merged: 1 2 3 4 5 6 7 8
+
+T.C. :  O( N * Log(N) )  ( sort )
+S.C. :  O( N ) 
+        
+        
