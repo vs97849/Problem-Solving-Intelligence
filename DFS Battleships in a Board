@@ -1,0 +1,79 @@
+/*
+https://leetcode.com/problems/battleships-in-a-board/description/?envType=problem-list-v2&envId=7p55wqm
+419. Battleships in a Board
+
+Given an m x n matrix board where each cell is a battleship 'X' or empty '.', return the number of the battleships on board.
+
+Battleships can only be placed horizontally or vertically on board. In other words, they can only be made of the shape 1 x k (1 row, k columns) or k x 1 (k rows, 1 column), 
+where k can be of any size. At least one horizontal or vertical cell separates between two battleships (i.e., there are no adjacent battleships).
+
+Example 1:
+
+Input: board = [["X",".",".","X"],[".",".",".","X"],[".",".",".","X"]]
+Output: 2
+Example 2:
+
+Input: board = [["."]]
+Output: 0
+*/
+
+Approach:
+    Battleships can either be aligned horizontal or verical and group of battleship making them as 2 when there will be gap. Feels like island problem. 
+    As there will be no 2 adjacent battleships/group. Which means if there will be battleship on 8 direction, the 4 horizontal and vertically touching/neighbor would make a single group.
+    Else for diagonal and having clear gaps would be different. Which ensures it's simply a connected components problem. And they want us to calculate the number of connected components in the matrix.
+    Hence from every node or matrix's cell, we can do dfs and marking every visited positions. So the required number will be the total unique number of dfs traversals.
+
+Code:
+
+    int dir[4][2] = { {-1,0}, {1,0}, {0,-1}, {0,1} };
+    void dfs(vector<vector<char>> & board, vector<vector<bool>> & vis, int n, int m, int i, int j) {
+        if(i<0 || j<0 || i>=n || j>=m || board[i][j] != 'X') return ;
+        if(vis[i][j]) return ;
+        vis[i][j] = true;
+        for(int d=0;d<4;++d) {
+            int ni = i + dir[d][0], nj = j + dir[d][1];
+            dfs(board, vis, n, m, ni, nj);
+        }
+    }
+
+    int countBattleships(vector<vector<char>>& board) {
+        int n = board.size(), m = board[0].size();
+        vector<vector<bool>> vis(n, vector<bool>(m, false));
+        int ans = 0;
+        for(int i=0;i<n;++i) {
+            for(int j=0;j<m;++j) {
+                if(!vis[i][j] && board[i][j] == 'X') {
+                    dfs(board, vis, n, m, i, j);
+                    ++ ans;
+                }
+            }
+        }
+        return ans;
+    }
+
+T.C. : O(M x N) : As in no case , there would be more traversal then the number of cells
+S.C. : O(M x N)
+
+Another Approach: it can be done in single pass in more effiecient way. 
+
+class Solution {
+public:
+    int countBattleships(vector<vector<char>>& board) {
+        int m = board.size();
+        int n = board[0].size();
+        int count = 0;
+
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(board[i][j] == 'X') {
+                    if((i == 0 || board[i-1][j] != 'X') &&  
+                       (j == 0 || board[i][j-1] != 'X')) {  
+                        count++; // Found a new battleship
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+};
