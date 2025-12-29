@@ -1,0 +1,73 @@
+15. 3Sum
+
+Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
+
+Notice that the solution set must not contain duplicate triplets.
+
+Example 1:
+
+Input: nums = [-1,0,1,2,-1,-4]
+Output: [[-1,-1,2],[-1,0,1]]
+Explanation: 
+nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
+nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.
+nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.
+The distinct triplets are [-1,0,1] and [-1,-1,2].
+Notice that the order of the output and the order of the triplets does not matter.
+Example 2:
+
+Input: nums = [0,1,1]
+Output: []
+Explanation: The only possible triplet does not sum up to 0.
+Example 3:
+
+Input: nums = [0,0,0]
+Output: [[0,0,0]]
+Explanation: The only possible triplet sums up to 0.
+ 
+
+Constraints:
+
+3 <= nums.length <= 3000
+-105 <= nums[i] <= 105
+ 
+
+Intuitions: 
+    1. brute force looks simple and clean. try all 3 combo sets of integers and checking for equality sum to zero. But would make it O(N^3). would be slow.
+
+    2. optimizations seems possible. If we would have sorted list, then we wouldn't need cross-pairs to check for all sets. fixing one index and rest 2 could be checked linearly ( in O(N) ).
+       On fixing one index, rest would be finding 2 pair sum to be equal to target - fixed item. Hence for those we have directional move based on if the 2 sum is bigger or smaller then rest target.
+       which is exactly 2Sum problem.
+       Another challenge is to have unique triplets.
+       a. we can find all and put that is set to avoid the repeating triplets. ( which would addup the logN checkings as is done in balanced trees ).
+       b. smarter and faster. We can skip the already consumed triplets after trying them / using them. This is possible in less time complexity in this case as we have already sorted the inputs.
+          if the first item is repeated. then after processing of this one, we can skip the upcoming ones. As that would seek out the rest 2 items exactly same. Hence would avoid extra traversal and also
+          avoid extra triplets being added.
+          Similarly for other items of the triplet.
+
+
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> ans;
+        for(int i=0;i<nums.size()-2;) {
+            for(int j=i+1, k=nums.size()-1; j<k; /*increments are conditionals*/) {
+                int sum = nums[i] + nums[j] + nums[k];
+                if(sum == 0) {
+                    ans.emplace_back(vector<int>{nums[i], nums[j], nums[k]});
+                    ++j;
+                    --k;
+                    while(j<k && nums[j] == nums[j-1]) ++j;
+                    while(j<k && nums[k] == nums[k+1]) --k;
+                }
+                else if(sum < 0) ++j;
+                else --k;
+            }
+            while(i < nums.size()-2 && nums[i] == nums[i+1]) ++i;
+            ++i;
+        }
+        return ans;
+
+
+ T.C. : O( N^2 )
+ S.C. : O( N ) 
+       
