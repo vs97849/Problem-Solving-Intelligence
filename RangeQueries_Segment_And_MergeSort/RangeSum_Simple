@@ -1,0 +1,110 @@
+307. Range Sum Query - Mutable
+
+Given an integer array nums, handle multiple queries of the following types:
+
+Update the value of an element in nums.
+Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+Implement the NumArray class:
+
+NumArray(int[] nums) Initializes the object with the integer array nums.
+void update(int index, int val) Updates the value of nums[index] to be val.
+int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+ 
+
+Example 1:
+
+Input
+["NumArray", "sumRange", "update", "sumRange"]
+[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]
+Output
+[null, 9, null, 8]
+
+Explanation
+NumArray numArray = new NumArray([1, 3, 5]);
+numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9
+numArray.update(1, 2);   // nums = [1, 2, 5]
+numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8
+ 
+
+Constraints:
+
+1 <= nums.length <= 3 * 104
+-100 <= nums[i] <= 100
+0 <= index < nums.length
+-100 <= val <= 100
+0 <= left <= right < nums.length
+At most 3 * 104 calls will be made to update and sumRange.
+
+Intuition: 
+      When you feel, sorting and prefix can't solve the problem alone.
+      Because order also matters hence sorting is not applicable.
+      And updates can happen in any index in any query, then prefix sums would invalidate as soon as we update in element at any index.
+      Hence brute force to scan every range/segment in each query would be huge ( as O(N) everytime ).
+      So it pushes us to think what iff we would have sum of different contingous range's sums stored.
+      And in each query , if we would have the discipline to go in a define direction to calculate through only required blocks of segments, then it might give us reduced algo.
+      That's what we can get in segment trees.
+      In segment tree, to follow discpiline, we divide the array into segments of contigous blocks and storing their sum in different array.
+      That way we would have 2 * N - 1 elements. yeah, little more we have to let it go on space.
+      And we can reach till valid depth/chain of segments in O( log N ).
+
+
+class NumArray {
+    vector<int>segTree;
+    int N;
+public:
+    // building segment Tree. first 2 index handling the segments of the array and the nodeIdx taking care of the segTree index where the new element needs to go.
+    void buildSegTree(vector<int> & nums, int start, int end, int nodeIdx) {
+        if(start == end) {
+            segTree[nodeIdx] = nums[start];
+            return;
+        }
+        int mid = (start + end) >> 1;
+        buildSegTree(nums, start, mid, nodeIdx * 2 + 1);
+        buildSegTree(nums, mid+1, end, nodeIdx * 2 + 2);
+        segTree[nodeIdx] = segTree[nodeIdx * 2 + 1] + segTree[nodeIdx * 2 + 2];
+    }
+
+    NumArray(vector<int>& nums) {
+        N = nums.size();
+        segTree.resize(N * 4);
+        buildSegTree(nums, 0, N - 1, 0); // first 2 args (start and end index in nums), 3rd arg is where we starting to put the first or root of segTree
+    }
+    
+    void updateSegTree(const int & index, const int & val, int start, int end, int nodeIdx) {
+        if(start == end) {
+            segTree[nodeIdx] = val;
+            return;
+        }
+        int mid = (start + end) >> 1;
+        if(mid >= index) updateSegTree(index, val, start, mid, nodeIdx * 2 + 1);
+        else updateSegTree(index, val, mid+1, end, nodeIdx * 2 + 2);
+        segTree[nodeIdx] = segTree[nodeIdx * 2 + 1] + segTree[nodeIdx * 2 + 2];
+    }
+
+    void update(int index, int val) {
+        updateSegTree(index, val, 0, N-1, 0);
+    }
+    
+    int getSegTreeSumRange(const int & ql, const int & qr, int start, int end, int nodeIdx) {
+        if(ql > end || qr < start) return 0;
+        if(ql <= start && qr >= end) return segTree[nodeIdx];
+        int mid = (start + end) >> 1;
+        return getSegTreeSumRange(ql, qr, start, mid, nodeIdx * 2 + 1) + 
+                getSegTreeSumRange(ql, qr, mid+1, end, nodeIdx * 2 + 2);
+    }
+
+    int sumRange(int left, int right) {
+        return getSegTreeSumRange(left, right, 0, N-1, 0);
+    }
+};
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * obj->update(index,val);
+ * int param_2 = obj->sumRange(left,right);
+ */
+
+
+// T.C. : O(N) one time for building segment tree, and then O( log N ) for each query
+// S.C. : O(N) or O(4N)
