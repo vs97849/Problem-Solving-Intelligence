@@ -1,0 +1,93 @@
+2426. Number of Pairs Satisfying Inequality
+
+You are given two 0-indexed integer arrays nums1 and nums2, each of size n, and an integer diff. Find the number of pairs (i, j) such that:
+
+0 <= i < j <= n - 1 and
+nums1[i] - nums1[j] <= nums2[i] - nums2[j] + diff.
+Return the number of pairs that satisfy the conditions.
+
+ 
+
+Example 1:
+
+Input: nums1 = [3,2,5], nums2 = [2,2,1], diff = 1
+Output: 3
+Explanation:
+There are 3 pairs that satisfy the conditions:
+1. i = 0, j = 1: 3 - 2 <= 2 - 2 + 1. Since i < j and 1 <= 1, this pair satisfies the conditions.
+2. i = 0, j = 2: 3 - 5 <= 2 - 1 + 1. Since i < j and -2 <= 2, this pair satisfies the conditions.
+3. i = 1, j = 2: 2 - 5 <= 2 - 1 + 1. Since i < j and -3 <= 2, this pair satisfies the conditions.
+Therefore, we return 3.
+Example 2:
+
+Input: nums1 = [3,-1], nums2 = [-2,2], diff = -1
+Output: 0
+Explanation:
+Since there does not exist any pair that satisfies the conditions, we return 0.
+ 
+
+Constraints:
+
+n == nums1.length == nums2.length
+2 <= n <= 105
+-104 <= nums1[i], nums2[i] <= 104
+-104 <= diff <= 104
+
+
+Intuition:
+      to reduce / simplify the iteration or complexity, rearranging:
+      nums1[i] - nums1[j] <= nums2[i] - nums2[j] + diff  to
+      nums1[i] - nums2[i] <= nums2[j] + nums1[j] + diff
+
+      as i < j, then it seems like we kind a need to see the array from the parted array eyes.
+      Such that, there would be left portion and right portion of the array. And the consideration, calculations would be based on partition.
+      Still seems like a O(N ^ 2) to check all pairs. but it's simplified to think.
+      The complexity appears to be big due to we need to scan, later / right part of the array after fixing the 'i'.
+      What if we have segments of the arrays sorted individually and we can find the satisfying relation equation count, in merge iteration manner (means by updating on both the segments). 
+      Hence making it O(l1 + l2) scan , instead of O( l1 x L2 ). And the after getting the required count from 2 segments, we can merge in sorted way so that it can be used efficiently for comparing
+      with other segments.
+      This is exactly what we do in mergeSort. Here while in merge part, we just need to count before sorting/merge the 2 individual sections.
+      And we know for mergeSort , T.C.: O(N log N)
+
+class Solution {
+    long long int ans{0};
+    int D{0};
+public:
+    void countAndMerge(vector<int> & numsCust, int start, int mid, int end) {
+        int l = start, r = mid+1;
+        while(l <= mid && r <= end) {
+            if(numsCust[l] <= numsCust[r] + D) {
+                ans += end - r + 1;
+                ++ l;
+            }
+            else ++ r;
+        }
+        sort(numsCust.begin() + start, numsCust.begin() + end + 1);
+    }
+
+    void mergeSort(vector<int> & numsCust, int start, int end) {
+        if(start == end) return ;
+        int mid = (start + end) >> 1;
+        mergeSort(numsCust, start, mid);
+        mergeSort(numsCust, mid+1, end);
+
+        countAndMerge(numsCust, start, mid, end);
+    }
+
+    long long numberOfPairs(vector<int>& nums1, vector<int>& nums2, int diff) {
+        int N = nums1.size();
+        D = diff;
+        vector<int> numsCust;
+        numsCust.reserve(N);
+        for(int i=0;i<N;++i) {
+            numsCust.emplace_back(nums1[i] - nums2[i]);
+        }
+
+        mergeSort(numsCust, 0, N-1);
+        return ans;
+    }
+};
+
+
+// T.C. : O( N x log N)
+// S.C. : O( N )
