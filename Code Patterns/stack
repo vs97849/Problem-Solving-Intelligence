@@ -1,0 +1,126 @@
+STACK
+1. Next Greater Element
+
+Recognition:
+
+next greater
+daily temperatures
+stock span
+
+Template:
+
+stack<int> st; // indices
+
+for(int i=0;i<n;++i)
+{
+    while(!st.empty() &&
+          nums[st.top()] < nums[i])
+    {
+        int idx = st.top();
+        st.pop();
+
+        // resolve idx using i
+    }
+
+    st.push(i);
+}
+
+Remember:
+
+Current element resolves previous unresolved elements.
+2. Previous Smaller
+
+Template:
+
+stack<int> st;
+
+for(int i=0;i<n;++i)
+{
+    while(!st.empty() &&
+          nums[st.top()] >= nums[i])
+    {
+        st.pop();
+    }
+
+    prevSmaller[i] =
+        st.empty() ? -1 : st.top();
+
+    st.push(i);
+}
+3. Next Smaller
+
+Template:
+
+stack<int> st;
+
+for(int i=n-1;i>=0;--i)
+{
+    while(!st.empty() &&
+          nums[st.top()] >= nums[i])
+    {
+        st.pop();
+    }
+
+    nextSmaller[i] =
+        st.empty() ? n : st.top();
+
+    st.push(i);
+}
+4. Histogram / Boundary Expansion
+
+Template:
+
+stack<int> st;
+
+for(int i=0;i<=n;++i)
+{
+    int curr =
+        (i==n ? 0 : heights[i]);
+
+    while(!st.empty() &&
+          heights[st.top()] > curr)
+    {
+        int h = heights[st.top()];
+        st.pop();
+
+        int left =
+            st.empty() ? -1 : st.top();
+
+        int width =
+            i - left - 1;
+
+        ans =
+            max(ans,
+                h * width);
+    }
+
+    st.push(i);
+}
+
+Trigger:
+
+Current smaller finalizes previous bars.
+5. Asteroid Collision
+
+Template:
+
+vector<int> st;
+
+for(int x : asteroids)
+{
+    bool dead = false;
+
+    while(!st.empty() &&
+          st.back() > 0 &&
+          x < 0)
+    {
+        ...
+    }
+
+    if(!dead)
+        st.push_back(x);
+}
+
+Trigger:
+
+Nearest survivor interacts first.
