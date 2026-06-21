@@ -1,0 +1,102 @@
+SLIDING WINDOW
+1. Fixed Window
+
+Template:
+
+int l = 0;
+
+for(int r=0;r<n;++r)
+{
+    add(nums[r]);
+
+    if(r-l+1 > k)
+    {
+        remove(nums[l]);
+        ++l;
+    }
+
+    if(r-l+1 == k)
+    {
+        update();
+    }
+}
+2. Longest Valid Window
+
+Template:
+
+int l = 0;
+
+for(int r=0;r<n;++r)
+{
+    add(nums[r]);
+
+    while(invalid())
+    {
+        remove(nums[l]);
+        ++l;
+    }
+
+    ans =
+        max(ans,
+            r-l+1);
+}
+
+Trigger:
+
+Longest valid window.
+Shrink when invalid.
+3. Minimum Window
+
+Template:
+
+int l = 0;
+
+for(int r=0;r<n;++r)
+{
+    add(nums[r]);
+
+    while(valid())
+    {
+        ans =
+            min(ans,
+                r-l+1);
+
+        remove(nums[l]);
+        ++l;
+    }
+}
+
+Trigger:
+
+Minimum valid window.
+Shrink while valid.
+4. Exactly K
+
+Template:
+
+int exactlyK(...)
+{
+    return atMost(K)
+         - atMost(K-1);
+}
+
+Trigger:
+
+Exactly K = AtMost(K) - AtMost(K-1)
+5. Frequency Window
+
+Template:
+
+array<int,26> freq{};
+
+++freq[s[r]-'A'];
+
+--freq[s[l]-'A'];
+
+or
+
+unordered_map<char,int> freq;
+
+Trigger:
+
+Need counts.
