@@ -1,0 +1,130 @@
+BINARY SEARCH
+
+1. Classic Search
+
+Template:
+
+while(l <= r)
+{
+    int m =
+        l + (r-l)/2;
+
+    if(nums[m] == target)
+        return m;
+
+    if(nums[m] < target)
+        l = m + 1;
+    else
+        r = m - 1;
+}
+2. Lower Bound
+
+Template:
+
+while(l < r)
+{
+    int m =
+        l + (r-l)/2;
+
+    if(nums[m] >= target)
+        r = m;
+    else
+        l = m + 1;
+}
+
+Trigger:
+
+First true.
+3. Rotated Sorted Array
+
+Template:
+
+if(nums[l] <= nums[m])
+{
+    // left sorted
+}
+else
+{
+    // right sorted
+}
+
+Trigger:
+
+One side always sorted.
+4. Find Minimum Rotated Array
+
+Template:
+
+while(l < r)
+{
+    int m =
+        l + (r-l)/2;
+
+    if(nums[m] > nums[r])
+        l = m + 1;
+    else
+        r = m;
+}
+
+Trigger:
+
+Compare with right.
+5. Binary Search on Answer
+
+Template:
+
+bool feasible(long long mid)
+{
+    ...
+}
+while(low < high)
+{
+    long long mid =
+        low + (high-low)/2;
+
+    if(feasible(mid))
+        high = mid;
+    else
+        low = mid + 1;
+}
+
+Trigger:
+
+Minimum feasible answer.
+HEAP
+Top K
+
+Template:
+
+priority_queue<
+    int,
+    vector<int>,
+    greater<int>
+> pq;
+
+for(int x : nums)
+{
+    pq.push(x);
+
+    if(pq.size() > k)
+        pq.pop();
+}
+
+Trigger:
+
+Keep best K elements.
+Running Median
+
+Template:
+
+priority_queue<int> left;
+
+priority_queue<
+    int,
+    vector<int>,
+    greater<int>
+> right;
+
+Trigger:
+
+Two heaps.
